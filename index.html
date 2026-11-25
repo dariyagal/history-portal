@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QazaqTarikh – Final Exam Portal</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#111217;--card:#171920;--el:#1D202A;--ink:#F3EFE6;--body:#C4C7D0;--mut:#8A8F9E;--bd:rgba(255,255,255,.08);--ac:#D8B458;--gb:rgba(216,180,88,.35);--hi:rgba(216,180,88,.10)}
+body{background:var(--bg);color:var(--body);font-family:'Inter',system-ui,sans-serif;margin:0;-webkit-font-smoothing:antialiased}
+h1,.serif{font-family:'Playfair Display',Georgia,serif;color:var(--ink)}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:10px;transition:all .25s}
+.card:hover{border-color:var(--gb)}
+.mut{color:var(--mut)}.ac{color:var(--ac)}
+.btn{border:1px solid var(--bd);border-radius:8px;padding:6px 12px;font-size:14px;background:var(--el);color:var(--body);cursor:pointer;transition:all .25s}
+.btn:hover{border-color:var(--ac);color:var(--ac)}
+.btn.on{background:var(--ac);color:#111217;border-color:var(--ac);font-weight:600}
+.sb{background:#171920;border-right:1px solid var(--bd)}
+.sb button{display:block;width:100%;text-align:left;padding:7px 12px;border-radius:6px;font-size:13px;color:var(--mut);transition:all .2s}
+.sb button:hover{background:var(--hi);color:var(--ink)}
+.sb button.on{background:var(--hi);color:var(--ac);box-shadow:inset 2px 0 0 var(--ac)}
+input,select{color:var(--ink);font:inherit;font-size:14px}input::placeholder{color:var(--mut)}input{accent-color:#D8B458}
+select option{background:#1D202A}
+summary{list-style:none}summary::-webkit-details-marker{display:none}
+table{border-collapse:collapse}
+.flip{min-height:220px;cursor:pointer}
+</style></head>
+<body><div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+const LECTURES_DATA = [
+{
+ id: 1, title: "Introduction, Evolution of Civilisation & Archaeology of Kazakhstan",
+ subtitle: "Course scope, historiography, human evolution and key archaeological cultures",
+ tags: ["Historiography", "Sapiens", "Botai", "Andronovo", "Saka"],
+ overview: [
+  "The History of Kazakhstan spans Ancient Kazakhstan, the Medieval Period, the Kazakh Khanate, the Colonial Period, Soviet Kazakhstan and Independent Kazakhstan. Historians separate primary sources (artefacts, inscriptions, chronicles, diaries, coins) from secondary sources (textbooks, research papers, documentaries).",
+  "The core goal is to place the Great Steppe within world history. The decolonial, civilizational approach rejects the Eurocentric image of nomads as “backward” and presents the steppe as a bridge between East and West, using Harari’s framework and archaeology as evidence."],
+ concepts: [
+  {t:"Primary sources", d:"Archaeological artefacts, inscriptions, chronicles, diaries, coins."},
+  {t:"Secondary sources", d:"Textbooks, research papers, documentaries."},
+  {t:"Genus Homo", d:"Africa 2.5M yrs ago → Eurasia 2M yrs ago."},
+  {t:"1M yrs ago", d:"First stone tools in Zhambyl and Mangystau."},
+  {t:"300k yrs ago", d:"Daily use of fire."},
+  {t:"Cognitive Revolution", d:"c. 70k yrs ago; fictive language enables large-scale cooperation."},
+  {t:"Agricultural Revolution", d:"c. 12k yrs ago; reached Central Asia later."},
+  {t:"1930–33", d:"Forced Soviet collectivization ended Kazakh pastoral nomadism."},
+  {t:"Botai culture", d:"Eneolithic, c. 3500 BCE; earliest horse domestication."},
+  {t:"Andronovo culture", d:"Bronze Age, ~4,000 yrs ago; metallurgy and pottery."},
+  {t:"Issyk kurgan", d:"Saka culture, 4th–3rd c. BCE; the “Golden Man”."},
+  {t:"1946", d:"Academy of Sciences institute (named after Ch. Valikhanov) drives Soviet-era archaeology."}],
+ notes: [
+  {h:"Kazakh historical school & decolonial approach", pts:["Valikhanov: ethnography plus critical analysis","Kopeev: oral traditions and genealogy","Abai: philosophy and identity","Civilizational approach: Great Steppe Civilization as East–West bridge"]},
+  {h:"Harari’s four revolutions", pts:["Cognitive (70k): fictive language","Agricultural (12k): Kazakhs kept pastoral nomadism because of steppe ecology","Unification of Humankind: Mongol, Russian and Soviet empires; Islam from 14th c.; Silk Road","Scientific: Russian schools and railways; Baikonur and Semipalatinsk"]},
+  {h:"Shared myths", pts:["Gods, nations, money, rights","In Kazakh society: adat (customary law) and the authority of khans"]},
+  {h:"Archaeology pioneers", pts:["Radlov: Copper, Bronze, Iron, Middle Ages","Lerkh (1867): Syr Darya and Talas ruins","Barthold (1893–94): Chui, Talas, Ili valleys","Margulan: Sary-Arka expedition; Andronovo, Begazy-Dandybay; medieval towns","Also Akishev, Zaibert, Samashev"]}],
+ figures: [
+  {n:"Shokan Valikhanov", life:"1835–1865", role:"Historian, ethnographer", contrib:"Founder of modern Kazakh historiography."},
+  {n:"Mashkhur Zhusup Kopeev", life:"1858–1931", role:"Folklorist, scholar", contrib:"Recorded oral traditions and genealogy."},
+  {n:"Abai Kunanbayev", life:"1845–1904", role:"Poet, thinker", contrib:"Philosophy and identity."},
+  {n:"V.V. Radlov", life:"19th c.", role:"Orientalist, archaeologist", contrib:"Periodization: Copper, Bronze, Iron, Middle Ages."},
+  {n:"P.I. Lerkh", life:"1867 expedition", role:"Archaeologist", contrib:"Studied Syr Darya and Talas ruins."},
+  {n:"V.V. Barthold", life:"1893–94 expeditions", role:"Orientalist", contrib:"Explored Chui, Talas, Ili valleys."},
+  {n:"A.Kh. Margulan", life:"Soviet era", role:"Archaeologist", contrib:"Central Kazakhstan Archaeological Expedition in Sary-Arka."},
+  {n:"Akishev, Zaibert, Samashev", life:"Soviet/post-Soviet", role:"Archaeologists", contrib:"Major excavations incl. Saka and Botai-era studies."}],
+ compare: [
+  {title:"Primary vs. secondary sources", cols:["","Primary","Secondary"], rows:[["Examples","Artefacts, inscriptions, chronicles, diaries, coins","Textbooks, research papers, documentaries"],["Nature","Direct evidence from the period","Interpretation of evidence"]]},
+  {title:"Eurocentric vs. civilizational view of nomads", cols:["","Eurocentric","Civilizational / decolonial"], rows:[["Nomads","“Backward”","Carriers of the Great Steppe Civilization"],["Steppe role","Periphery","Bridge between East and West"]]}],
+ cases: [
+  {t:"Botai culture", d:"Earliest known horse domestication (c. 3500 BCE)."},
+  {t:"Andronovo culture", d:"Bronze Age metallurgy and pottery across the steppe."},
+  {t:"Issyk kurgan", d:"Saka burial, the “Golden Man”, 4th–3rd c. BCE."},
+  {t:"Silk Road cities", d:"Otrar, Taraz, Turkestan; plus petroglyphs."},
+  {t:"Baikonur & Semipalatinsk", d:"Soviet space and nuclear legacy."}],
+ memorize: ["Botai c. 3500 BCE = horse domestication","Cognitive 70k, Agricultural 12k, fire 300k, first tools 1M","Collectivization 1930–33","Valikhanov 1835–1865","Radlov classification: Copper, Bronze, Iron, Middle Ages"],
+ cheat: {
+  lines: ["Primary = artefacts, chronicles; secondary = textbooks","Valikhanov founded modern Kazakh historiography","Nomads were not “backward”: Great Steppe Civilization","Botai → horse; Andronovo → metals; Issyk → Saka gold"],
+  qa: [
+   {q:"Distinguish primary from secondary sources.", a:"Primary sources are direct evidence (artefacts, inscriptions, chronicles, diaries, coins); secondary sources interpret them (textbooks, research papers, documentaries)."},
+   {q:"Why did Kazakhs preserve pastoral nomadism?", a:"Steppe ecology favoured herding over farming; it lasted until forced Soviet collectivization in 1930–33."},
+   {q:"What is the significance of the Botai culture?", a:"An Eneolithic culture (c. 3500 BCE) with the earliest evidence of horse domestication."},
+   {q:"Who was Shokan Valikhanov?", a:"(1835–1865) Founder of modern Kazakh historiography, combining ethnography with critical analysis."},
+   {q:"Name Harari’s four revolutions.", a:"Cognitive, Agricultural, Unification of Humankind, Scientific."}]}
+},
+{
+ id: 2, title: "The Turkic Era on the Territory of Kazakhstan (6th–12th Centuries)",
+ subtitle: "From the First Turkic Khaganate to the Karakhanids and the Islamic Turkic Renaissance",
+ tags: ["Turkic Khaganate", "Türgesh", "Karakhanids", "Al-Farabi", "Yasawi"],
+ overview: [
+  "In 552 Bumin of the Ashina clan overthrew the Rouran and founded the First Turkic Khaganate, which under Muqan Qaghan stretched from Korea to the Caspian Sea. Chinese sources (Zhou shu, Sui shu, Bei shi) record its rise, its diplomacy with Iran and Byzantium, and its split in 603.",
+  "The goal of this lecture is to trace the chain of Turkic states on Kazakh land (Western Turkic, Türgesh, Karluk, Oghuz, Kimak, Kipchak, Karakhanid) and the scientific and literary flowering of the 10th–12th centuries under Islam."],
+ concepts: [
+  {t:"552", d:"Bumin defeats the Rouran and becomes Il-khan; First Turkic Khaganate (552–603)."},
+  {t:"553–572", d:"Muqan Qaghan: Korea to Caspian Sea, Baikal to Gobi."},
+  {t:"562–567", d:"Istemi allies with Sasanian Iran (Khosrow I) and defeats the Hephthalites."},
+  {t:"568", d:"Sogdian Maniah sent to Byzantium (Justin II); return envoy Zemarchus."},
+  {t:"603", d:"Split into Eastern and Western Khaganates."},
+  {t:"Western Khaganate 603–704", d:"“On Ok El” (Ten Arrows); capital Suyab, summer residence Ming-Bulak."},
+  {t:"657", d:"Tang invasion defeats the Ten Arrows."},
+  {t:"Türgesh 699–756", d:"Founded by Uch-Elik; capitals Suyab and Kungut."},
+  {t:"751", d:"Battle of Atlakh (Talas): Arabs + Karluks defeat Tang China."},
+  {t:"Karluk 756–940", d:"Zhetysu; capitals Suyab and Kungut."},
+  {t:"Karakhanids 940–1212", d:"Satuk Bughra Khan; Islam state religion 960; Transoxiana 999."},
+  {t:"1141", d:"Battle of Qatwan: Kara-Khitans defeat the Karakhanids."}],
+ notes: [
+  {h:"Origins & First Khaganate", pts:["Ashina migrated to Altai after 460 under Rouran pressure, paying iron tribute","545 Western Wei envoy to Bumin; 551 Bumin marries a Chinese princess after Anagui’s insult (“blacksmith slave”)","Muqan defeated Khitan and Yenisei Kyrgyz"]},
+  {h:"Diplomacy & governance", pts:["Khagan → Yabghu, Shad, Elteber → Buyuruqs and Tarhans (judicial) → Beks → Kara budun (free herders)","Iran burned Sogdian silk, so Istemi turned to Byzantium"]},
+  {h:"Western Khaganate", pts:["581 death of Taspar → civil war and Sui pressure → 603 split","Peak under Shegui (611–618) and Tong Yabghu (618–630)","Tong Yabghu allied with Heraclius at Tbilisi (627–628); introduced Tuduns for taxes","Nushibi vs. Dulu rivalry weakened the state"]},
+  {h:"Türgesh", pts:["Uch-Elik (699–706): 20 tutuks of 7,000 warriors","Suluk (715–738), capital Taraz, “Abu Muzahim”; resisted Qutayba ibn Muslim; killed by Baga Tarkhan","Yellow vs. Black Türgesh civil war"]},
+  {h:"Other early medieval states", pts:["Oghuz (late 9th–early 11th): Yangikent, ruler Yabghu, ancestors of the Seljuks","Kimak (mid-9th–early 11th): Irtysh, capital Imakiya","Kipchaks (11th–13th): Desht-i Kipchak; Otrar, Sygnak"]}],
+ figures: [
+  {n:"Bumin (Il-khan)", life:"d. 552", role:"Founder of the First Khaganate", contrib:"Defeated the Rouran in 552."},
+  {n:"Muqan Qaghan", life:"553–572", role:"Khagan", contrib:"Expanded from Korea to the Caspian; beat Khitan and Yenisei Kyrgyz."},
+  {n:"Istemi Yabghu", life:"6th c.", role:"Western ruler", contrib:"Alliance with Iran; defeated Hephthalites; Byzantine embassy."},
+  {n:"Tong Yabghu", life:"618–630", role:"Western Khagan", contrib:"Allied with Heraclius; introduced Tuduns."},
+  {n:"Suluk Khagan", life:"715–738", role:"Türgesh ruler", contrib:"Resisted Arab conquest; capital Taraz."},
+  {n:"Satuk Bughra Khan", life:"940", role:"Karakhanid founder", contrib:"State founded 940; Islam adopted by 960."},
+  {n:"Al-Farabi", life:"872–950", role:"Philosopher (Otyrar)", contrib:"“Second Teacher”; Classification of Sciences, Great Book of Music, The Virtuous City."},
+  {n:"Al-Biruni", life:"973–1048", role:"Scientist", contrib:"Canon of Masud; Earth’s size and gravity."},
+  {n:"Ibn Sina (Avicenna)", life:"980–1037", role:"Physician", contrib:"Canon of Medicine."},
+  {n:"Yusuf Balasaguni", life:"11th c.", role:"Poet", contrib:"Kutadgu Bilig."},
+  {n:"Mahmud al-Kashgari", life:"11th c.", role:"Linguist", contrib:"Diwan Lughat al-Turk and a map of the Turkic world."},
+  {n:"Ahmet Yugnaki", life:"12th c.", role:"Poet", contrib:"Hibbat al-Haqaiq."},
+  {n:"Khoja Ahmed Yasawi", life:"12th c.", role:"Sufi poet", contrib:"Divan-i Hikmet; pupil of Arystan Bab; mausoleum in Turkestan."}],
+ compare: [
+  {title:"Early medieval Turkic states", cols:["State","Dates","Centre / region","Key point"], rows:[
+   ["Western Turkic Khaganate","603–704","Suyab, Ming-Bulak","Ten Arrows; fell to Tang in 657"],
+   ["Türgesh","699–756","Suyab, Kungut, Taraz","Suluk resisted Arabs"],
+   ["Karluk","756–940","Suyab, Kungut","Khagan title from 840"],
+   ["Oghuz","late 9th–early 11th c.","Yangikent","Ancestors of Seljuks"],
+   ["Kimak","mid-9th–early 11th c.","Imakiya (Irtysh)","Khaganate in the north"],
+   ["Karakhanid","940–1212","Balasagun, Kashgar, Uzgen, Samarkand","Islam state religion 960"]]}],
+ cases: [
+  {t:"Battle of Atlakh (751)", d:"Arabs + Karluks beat Tang China; halted Chinese expansion and spread Islam."},
+  {t:"Tbilisi alliance (627–628)", d:"Tong Yabghu and Heraclius against Persia."},
+  {t:"Byzantine embassy (568)", d:"Maniah to Justin II; Zemarchus returns."},
+  {t:"Karakhanid mausoleums", d:"Aisha Bibi, Babadzha Khatun, Karakhan."},
+  {t:"Turkestan", d:"Yasawi mausoleum."}],
+ memorize: ["552 Bumin; 553–572 Muqan; 603 split; 657 Tang","699–756 Türgesh; 751 Atlakh","940 Karakhanids; 960 Islam; 1141 Qatwan; 1212 end","Al-Farabi 872–950; Al-Biruni 973–1048; Ibn Sina 980–1037","Hierarchy: Khagan → Yabghu/Shad/Elteber → Buyuruqs/Tarhans → Beks → Kara budun"],
+ cheat: {
+  lines: ["Sources: Zhou shu, Sui shu, Bei shi","Western capital Suyab; summer Ming-Bulak","Atlakh 751 = Arabs + Karluks over Tang","Kashgari map + Balasaguni Kutadgu Bilig = Turkic literary canon"],
+  qa: [
+   {q:"How was the Turkic Khaganate governed?", a:"Khagan, then Yabghu/Shad/Elteber deputies, Buyuruqs and Tarhans (judicial), Beks, and the free Kara budun."},
+   {q:"Why did the Khaganate split in 603?", a:"After Taspar’s death (581), civil war and Sui pressure divided it into Eastern and Western Khaganates."},
+   {q:"Significance of the Battle of Atlakh?", a:"In 751 Arabs and Karluks defeated Tang China, stopping Chinese expansion and spreading Islam."},
+   {q:"What did Al-Farabi contribute?", a:"“Second Teacher” of Otyrar: Classification of Sciences, Great Book of Music, The Virtuous City."},
+   {q:"When did Karakhanids adopt Islam?", a:"Declared the state religion in 960; the state lasted 940–1212."}]}
+}
+,
+{
+ id: 3, title: "Ulug Ulus (Golden Horde) and the Rise of the Kazakh Khanate",
+ subtitle: "From Chinggis Khan’s empire to the Golden Horde and the founding of the Kazakh Khanate",
+ tags: ["Mongol Empire", "Golden Horde", "Kazakh Khanate", "Zhüzes", "Aq söyek"],
+ overview: [
+  "Temüchin united the steppe tribes and was proclaimed Chinggis Khan in 1206, creating the Mongol Empire. After 1218 it was divided into four uluses; the Jochi ulus (Ulug Ulus, the Golden Horde) controlled the Irtysh and the western steppe and became the political root of later Kazakh statehood.",
+  "The Horde declined through the 14th century into rival hordes and successor khanates. After Abu’l-Khayr’s defeat by the Oirats (1457), sultans Kerey and Janibek led a migration to the Chu Valley and founded the Kazakh Khanate (1458–61 / 1465). The aim of this lecture is to follow that chain from empire to khanate and to learn its institutions and social order."],
+ concepts: [
+  {t:"1206", d:"Quriltai proclaims Temüchin Chinggis Khan."},
+  {t:"1210–1215", d:"Conquest of Tangut, Jin and Qara Khitai."},
+  {t:"1218–1224", d:"Conquest of Khwarazm."},
+  {t:"1218 quriltai", d:"Empire divided into four uluses (Tolui, Ögödei, Chaghatai, Jochi)."},
+  {t:"1236–1242", d:"Batu’s Western campaign: Volga Bulgharia 1236, Kiev 1240, Liegnitz and Muhi 1241; withdrawal 1242."},
+  {t:"Sarai", d:"Golden Horde capital (Sarai-Batu, later Sarai-Berke)."},
+  {t:"Berke (1255–1266)", d:"First Muslim khan; 1257 census; allied with the Mamluks."},
+  {t:"Özbek Khan (1312–1342)", d:"Islam made official; tax exemption for the Orthodox Church; empowered Moscow."},
+  {t:"1359–1380", d:"Bulghaq crisis: 25+ khans, Mamai, Battle of Kulikovo (1380)."},
+  {t:"1382 / 1391 / 1395", d:"Toqtamish burns Moscow (1382); crushed by Timur (1391, 1395)."},
+  {t:"1457", d:"Oirats defeat Abu’l-Khayr; Kerey and Janibek migrate to the Chu Valley."},
+  {t:"Aq söyek / Qara söyek", d:"“White bone” (Chinggisids, sultans, tores) vs. “Black bone” (commoners)."}],
+ notes: [
+  {h:"Mongol Empire & Chinggis Khan", pts:["Source: Secret History of the Mongols","United Naiman, Kereyit, Merkit and Tatar tribes","Four uluses: Tolui (Mongolia), Ögödei (supreme khan, west of Balkhash), Chaghatai (Semirech’e, guardian of the Yasa), Jochi (Irtysh and western steppe)"]},
+  {h:"Golden Horde rulers", pts:["Batu (Sayin Khan)","Berke (1255–66): 1257 census, Mamluk alliance","Mengü-Temür (1267–80): full independence, own coins, Italian colonies Caffa and Tana","Toqta (1290–1312): defeated Emir Noghai in 1300","Özbek (1312–42) and Janibek (1342–57)"]},
+  {h:"State structure & army", pts:["Divan (Imperial Council led by the Vizier)","Darughachi/Basqaqs: tax collectors; Beks/Emirs; Beklare-bek: prime minister and army chief","Decimal army: Tumenbasy 10,000, Mynbasy 1,000, Zhuzbasy 100, Onbasy 10; Bakauls: supply","Turkic majority assimilated the Mongol elite (“Tatars”)"]},
+  {h:"Fragmentation", pts:["Aq Orda (White Horde) and Kök Orda (Blue Horde, centre Sighanaq, Urus Khan 1368)","Successors: Kazan, Crimea, Astrakhan, Sibir, Noghai Horde","State of Nomadic Uzbeks: Abu’l-Khayr (1429–68), Shibanid, capital Sighanaq"]},
+  {h:"Kazakh Khanate", pts:["Founders: sultans Kerey and Janibek, sons of Barak Khan, with Moghulistan’s support (“Uzbek-Qazaqs”)","Biys: customary law judges; Khwajas: religious elite","Three Zhüzes: Senior (Uly), Middle (Orta), Junior (Kishi)"]}],
+ figures: [
+  {n:"Chinggis Khan (Temüchin)", life:"proclaimed 1206", role:"Founder of the Mongol Empire", contrib:"United the steppe tribes; conquered Tangut, Jin, Qara Khitai and Khwarazm."},
+  {n:"Batu Khan", life:"13th c.", role:"Golden Horde founder", contrib:"Western campaign 1236–42; founded Sarai."},
+  {n:"Berke", life:"1255–1266", role:"Khan", contrib:"First Muslim khan; census of 1257; Mamluk ally."},
+  {n:"Mengü-Temür", life:"1267–1280", role:"Khan", contrib:"Full independence; coinage; Caffa and Tana."},
+  {n:"Özbek Khan", life:"1312–1342", role:"Khan", contrib:"Islam official; privileges for the Orthodox Church; empowered Moscow."},
+  {n:"Toqtamish", life:"d. after 1395", role:"Khan", contrib:"Burned Moscow in 1382; crushed by Timur."},
+  {n:"Abu’l-Khayr Khan", life:"1429–1468", role:"Shibanid ruler", contrib:"State of Nomadic Uzbeks; capital Sighanaq."},
+  {n:"Kerey and Janibek", life:"mid-15th c.", role:"Sultans", contrib:"Migrated to the Chu Valley; founded the Kazakh Khanate."},
+  {n:"Qasim Khan", life:"1511–1517", role:"Kazakh khan", contrib:"Strengthened the khanate in the Syr Darya valley."},
+  {n:"Esim Khan", life:"1598–1628", role:"Kazakh khan", contrib:"Made Turkestan the capital."},
+  {n:"Tawke Khan", life:"1680–1718", role:"Last unified khan", contrib:"Last ruler of the whole khanate before the Zhüz split."},
+  {n:"Haqnazar and Tawakkul", life:"1538–80; 1582–98", role:"Kazakh khans", contrib:"Consolidated and defended the khanate."}],
+ compare: [
+  {title:"The four uluses (1218)", cols:["Heir","Ulus / role","Territory"], rows:[["Tolui","Heartland","Mongolia"],["Ögödei","Supreme khan","West of Balkhash"],["Chaghatai","Guardian of the Yasa","Semirech’e"],["Jochi","Ulug Ulus","Irtysh and western steppe"]]},
+  {title:"Aq söyek vs. Qara söyek", cols:["","Aq söyek (White bone)","Qara söyek (Black bone)"], rows:[["Who","Chinggisids, khans, sultans, tores","Commoners"],["Parallel groups","Khwajas (religious elite)","Biys judged by customary law"]]}],
+ cases: [
+  {t:"Western campaign (1236–42)", d:"Volga Bulgharia, Kiev, Liegnitz and Muhi; halted by Ögödei’s death."},
+  {t:"Battle of Kulikovo (1380)", d:"Marked the Bulghaq crisis and Mamai’s defeat."},
+  {t:"Timur vs. Toqtamish", d:"1391 and 1395 defeats ended Horde unity."},
+  {t:"Özbek’s reforms", d:"Islam official; Moscow empowered."},
+  {t:"Turkestan as capital", d:"Esim Khan (1598–1628)."}],
+ memorize: ["1206 Chinggis; 1218 four uluses","Batu 1236–42; Kiev 1240; Muhi and Liegnitz 1241","Berke 1255–66; Özbek 1312–42; Kulikovo 1380; Timur 1391, 1395","Abu’l-Khayr 1429–68; Oirat defeat 1457; Kazakh Khanate 1458–61 / 1465","Qasim 1511–17; Esim 1598–1628; Tawke 1680–1718"],
+ cheat: {
+  lines: ["Source: Secret History of the Mongols","Decimal army: 10, 100, 1,000, 10,000","Aq Orda and Kök Orda split the Horde","Kerey and Janibek founded the Kazakh Khanate","Three Zhüzes: Uly, Orta, Kishi"],
+  qa: [
+   {q:"How was the Mongol Empire divided in 1218?", a:"Into four uluses: Tolui (Mongolia), Ögödei (west of Balkhash, supreme khan), Chaghatai (Semirech’e, Yasa guardian) and Jochi (Irtysh and western steppe)."},
+   {q:"Describe the Golden Horde’s military organization.", a:"A decimal system: Tumenbasy (10,000), Mynbasy (1,000), Zhuzbasy (100), Onbasy (10), with Bakauls handling supply and the Beklare-bek commanding."},
+   {q:"What role did Özbek Khan play?", a:"He made Islam official, exempted the Orthodox Church from taxes and empowered Moscow (1312–42)."},
+   {q:"How did the Kazakh Khanate arise?", a:"After Abu’l-Khayr’s defeat by the Oirats (1457), Kerey and Janibek led a migration to the Chu Valley with Moghulistan’s support, founding the khanate (1458–61 / 1465)."},
+   {q:"What was Aq söyek?", a:"The “White bone”: Chinggisid khans, sultans and tores, opposed to the commoners (Qara söyek)."}]}
+},
+{
+ id: 4, title: "Colonisation of Kazakhstan by the Russian Empire",
+ subtitle: "Dzungar wars, Russian subjecthood, administrative reforms and land expropriation",
+ tags: ["Dzungars", "Ablai Khan", "Statutes", "Land", "Alash"],
+ overview: [
+  "Kazakh society, fragmented after Tawke Khan, faced the centralized, artillery-equipped Dzungar state (1643–1756). Heavy losses pushed the khans toward Russia: Abulkhair swore allegiance in 1731, and Middle and Great Zhüz leaders followed. Russia and the Kazakhs read this subjecthood differently.",
+  "Russia then replaced khanal rule with statutes (1822, 1824, 1867–68, 1886, 1891), declared Kazakh land state property and opened it to settlers. The aim of this lecture is to trace how diplomacy turned into colonial administration, and how a new intelligentsia (Altynsarin, Abai, Alash) responded."],
+ concepts: [
+  {t:"1643", d:"Battle of Orbulaq, early Kazakh defence."},
+  {t:"1710", d:"Kurultai forms a common militia."},
+  {t:"1723–1727", d:"“Years of the Great Disaster” (Aqtaban Shubyryndy): Tsewang Rabtan’s invasion; Tashkent and Sayram lost."},
+  {t:"1726 / 1730", d:"Ordabasy meeting and Bulanty; decisive victory at Anyraqai (1730)."},
+  {t:"1731", d:"Abulkhair Khan (Junior Zhüz) swears allegiance to Russia."},
+  {t:"1740", d:"Abulmambet and Ablai (Middle Zhüz) swear oaths."},
+  {t:"1755", d:"Qing Empire destroys the Dzungar Khanate."},
+  {t:"1757", d:"Ablai swears subjecthood to the Qing (waifan)."},
+  {t:"1801", d:"Inner (Bukey) Horde founded under Bukey."},
+  {t:"1822 / 1824", d:"Statute on the Siberian Kirgiz; abolition of the Junior Zhüz khanate."},
+  {t:"1867–68, 1886, 1891", d:"Provisional Statutes, Turkestan Statute, Steppe Statute."},
+  {t:"1896–1903", d:"Shcherbina Expedition reduces Kazakh land norms."}],
+ notes: [
+  {h:"Kazakh–Dzungar wars", pts:["Dzungars: centralized state, artillery and firearms","1715/1718: Tawke’s death left Kazakhs fragmented","1723–27 disaster, 1726 Ordabasy and Bulanty, 1730 Anyraqai","1755: Qing ends the Dzungar state"]},
+  {h:"Subjecthood and the perception gap", pts:["Russia: permanent incorporation (yasak tax, amanat hostages)","Kazakh khans: temporary, non-exclusive military alliance","1733 Great Zhüz petitioned; 1734 Orenburg Expedition built fort lines"]},
+  {h:"Balancing empires", pts:["Ablai Khan (1771–81): bilateral diplomacy with Qing and Russia; trade intermediary","Rivalry with Bukhara, Khiva, Khokand over Tashkent","Jahangir Khoja’s anti-Qing revolt (1820s)"]},
+  {h:"Reforms & land", pts:["1822: Middle Zhüz abolished → okrugs, volosts, auls (Omsk centre)","1824: Junior Zhüz khanate abolished; 1844 Regulation on Orenburg Qazaqs","Parallel courts: imperial code vs. biys’ adat","Steppe and Turkestan Governor-Generalships; all land declared state property; “surplus land” for Slavic peasants","Trans-Siberian Railway: over 1 million settlers"]},
+  {h:"Social & cultural change", pts:["Landless zhataks (wage labourers) and pro-imperial bais","Jadidism and the Qazaq newspaper → Alash movement"]}],
+ figures: [
+  {n:"Tsewang Rabtan", life:"early 18th c.", role:"Dzungar ruler", contrib:"Led the invasion of the Great Disaster."},
+  {n:"Abulkhair Khan", life:"1731", role:"Junior Zhüz khan", contrib:"First to swear allegiance to Russia."},
+  {n:"Ablai Khan", life:"1771–1781", role:"Middle Zhüz khan", contrib:"Balanced Qing and Russia; trade intermediary."},
+  {n:"Abulmambet", life:"1740", role:"Middle Zhüz khan", contrib:"Swore oaths to Russia with Ablai."},
+  {n:"Bukey", life:"1801", role:"Khan", contrib:"Founded the Inner (Bukey) Horde."},
+  {n:"Jahangir Khoja", life:"1820s", role:"Rebel leader", contrib:"Anti-Qing revolt in the south."},
+  {n:"Chokan Valikhanov", life:"19th c.", role:"Ethnographer, mediator", contrib:"Bridged Kazakh and Russian worlds."},
+  {n:"Ibrai Altynsarin", life:"19th c.", role:"Educator", contrib:"Bilingual schools; Kazak Reader."},
+  {n:"Abai Kunanbaev", life:"19th c.", role:"Poet, thinker", contrib:"Modern Kazakh literature; Words of Edification."},
+  {n:"Alikhan Bukeikhanov", life:"early 20th c.", role:"Alash leader", contrib:"Alash movement."},
+  {n:"Akhmet Baitursynov", life:"early 20th c.", role:"Alash leader", contrib:"Alash movement; Qazaq newspaper circle."}],
+ compare: [
+  {title:"Two readings of subjecthood", cols:["","Russia","Kazakh khans"], rows:[["Meaning","Permanent territorial incorporation","Temporary, non-exclusive military alliance"],["Obligations","Yasak tax; amanat hostages","Protection against Dzungars"]]},
+  {title:"Colonial statutes", cols:["Year","Statute","Effect"], rows:[["1822","Siberian Kirgiz","Middle Zhüz abolished; okrugs, volosts, auls"],["1824 / 1844","Junior Zhüz / Orenburg Qazaqs","Khanate abolished; new regulation"],["1867–68","Provisional Statutes","Governor-Generalships; land as state property"],["1886 / 1891","Turkestan / Steppe","“Surplus land” for settlers"]]}],
+ cases: [
+  {t:"Anyraqai (1730)", d:"Decisive Kazakh victory over the Dzungars."},
+  {t:"Orenburg Expedition (1734)", d:"Fort lines for control."},
+  {t:"Ablai’s dual subjecthood (1757)", d:"Outer feudatory to the Qing while keeping Russian ties."},
+  {t:"Shcherbina Expedition", d:"Cut land norms; basis for resettlement."},
+  {t:"Trans-Siberian Railway", d:"Over 1 million Russian and Ukrainian settlers."}],
+ memorize: ["1643 Orbulaq; 1723–27 Great Disaster; 1730 Anyraqai; 1755 Dzungars destroyed","1731 Abulkhair; 1740 Ablai and Abulmambet","1822 and 1824 abolition of Zhüz khanates","1867–68, 1886, 1891 statutes; Shcherbina 1896–1903","Alash: Bukeikhanov and Baitursynov"],
+ cheat: {
+  lines: ["Perception gap: permanent subjecthood vs. temporary alliance","Ablai kept ties with both Qing and Russia","All land declared state property","Zhataks vs. pro-imperial bais"],
+  qa: [
+   {q:"Why did Kazakh khans turn to Russia?", a:"After the Dzungar invasions (the Great Disaster, 1723–27) a fragmented society sought protection; Abulkhair swore allegiance in 1731."},
+   {q:"What was the perception gap?", a:"Russia saw permanent incorporation with yasak and amanats; Kazakh khans saw a temporary, non-exclusive military alliance."},
+   {q:"How did Ablai Khan balance empires?", a:"He swore subjecthood to the Qing in 1757 while keeping ties with Russia and acting as trade intermediary."},
+   {q:"What did the 1822 Statute do?", a:"It abolished the Middle Zhüz and created okrugs, volosts and auls with an Omsk centre; the Junior Zhüz khanate followed in 1824."},
+   {q:"How was Kazakh land expropriated?", a:"Statutes declared all land state property; “surplus” land was opened to Slavic settlers, aided by the Shcherbina Expedition and the Trans-Siberian Railway."}]}
+},
+{
+ id: 5, title: "The Kazakh People’s Resistance to Colonial Domination (1773–1916)",
+ subtitle: "Major uprisings, the 1916 revolt and the intelligentsia’s new repertoire of resistance",
+ tags: ["Uprisings", "Kenesary", "1916", "Intelligentsia", "Alash"],
+ overview: [
+  "Resistance grew from three overlapping pressures: land loss (fort lines, “surplus” rules), administration (the 1822–24 statutes abolishing khans) and coercion (taxes, requisitions, punitive raids). Leaders ranged from batyrs to khans, and sharua (ordinary pastoralists) formed the mass base.",
+  "The lecture follows the main uprisings from Pugachev (1773) to 1916, then the intelligentsia’s shift to schools, newspapers and political programs. It ends with the 1916 debate between radicals and Alash liberals."],
+ concepts: [
+  {t:"1773–1775", d:"Pugachev Rebellion: Junior and Middle Jüz detachments joined; Khan Nuraly hedged."},
+  {t:"1783–1797", d:"Syrym Datuly (Junior Jüz): anti-colonial war plus internal reform."},
+  {t:"1822–1824", d:"Zholaman Batyr Tlenshiuly: protest against the New Ilek Line."},
+  {t:"1836–1838", d:"Isatai Taimanuly and Makhambet Utemisuly (Bukey Horde); Tastobe 1837, Akbulak 1838."},
+  {t:"1837–1847", d:"Kenesary Kasymuly: all three Jüzes; Akmola 1838; elected Khan 1841; killed 1847."},
+  {t:"1847–1858", d:"Eset Kotibaruly: mobile resistance in the western steppe; peace in 1858."},
+  {t:"1856–1857", d:"Zhankozha Nurmukhameduly, Syr Darya: Kazaly fort, land, irrigation, forced labour."},
+  {t:"June 25, 1916", d:"Tsar’s decree conscripting men aged 19–43 for WWI rear labour."},
+  {t:"Turgay centre 1916", d:"Army led by Amangeldy Imanov and khan Abdigappar."},
+  {t:"Jetisu centre 1916", d:"Mass mobilization, brutal repression, mass flight to China."},
+  {t:"Batyr", d:"Warrior leader."},
+  {t:"Sharua", d:"Ordinary pastoralists."}],
+ notes: [
+  {h:"Drivers of resistance", pts:["Land loss: fort lines, “surplus” rules","Administration: 1822–24 statutes abolishing khans","Coercion: taxes, requisitions, punitive raids"]},
+  {h:"Early uprisings", pts:["Pugachev: opposition to pasture restrictions and Ural Cossacks","Syrym Datuly: attacked forts and caravans; removed Khan Nuraly; strengthened the council of elders; limited by elite divisions","Zholaman: Tabyn and Tama clans vs. New Ilek Line"]},
+  {h:"Isatai & Makhambet; Kenesary", pts:["Isatai led military action, Makhambet was the poetic and political voice, against land concentration under Zhangir Khan","Kenesary’s programme: abolish okrugs and forts, restore Ablai’s sovereign state","Built a centralized army, council and tax system; fought Russia in the north and Kokand in the south"]},
+  {h:"Late regional uprisings", pts:["Zhankozha Nurmukhameduly: Kazaly fort, irrigation, forced labour","Eset Kotibaruly: mobile resistance and peace in 1858"]},
+  {h:"1916 and the intelligentsia", pts:["Intelligentsia moved to schools, newspapers and political programs (land, language, autonomy)","1916: radicals backed armed revolt; Alash liberals urged negotiation to prevent mass slaughter","Scholars: Ian Campbell, Steven Sabol"]}],
+ figures: [
+  {n:"Syrym Datuly", life:"1783–1797", role:"Junior Jüz leader", contrib:"Combined anti-colonial war with internal reform."},
+  {n:"Zholaman Batyr Tlenshiuly", life:"1822–1824", role:"Batyr", contrib:"Led Tabyn and Tama clans against the New Ilek Line."},
+  {n:"Isatai Taimanuly", life:"1836–1838", role:"Military leader", contrib:"Led the Bukey Horde uprising."},
+  {n:"Makhambet Utemisuly", life:"1836–1838", role:"Poet, political voice", contrib:"Voice of the uprising; Tastobe 1837, Akbulak 1838."},
+  {n:"Kenesary Kasymuly", life:"1837–1847", role:"Khan (elected 1841)", contrib:"National programme to restore Ablai’s state; centralized army and taxes."},
+  {n:"Zhankozha Nurmukhameduly", life:"1856–1857", role:"Syr Darya leader", contrib:"Rose at Kazaly fort against land and labour burdens."},
+  {n:"Eset Kotibaruly", life:"1847–1858", role:"Western steppe leader", contrib:"Mobile resistance; peace 1858."},
+  {n:"Amangeldy Imanov", life:"1916", role:"Turgay commander", contrib:"Led the Turgay army with khan Abdigappar."},
+  {n:"Ian Campbell and Steven Sabol", life:"modern", role:"Scholars", contrib:"Historians of Kazakh resistance and colonialism."}],
+ compare: [
+  {title:"Chronology of major uprisings", cols:["Years","Leader(s)","Region","Cause / outcome"], rows:[
+   ["1773–75","Pugachev rebellion","Junior and Middle Jüz","Pasture limits; Nuraly hedged"],
+   ["1783–97","Syrym Datuly","Junior Jüz","War plus reform; elites divided"],
+   ["1822–24","Zholaman","Junior Jüz","New Ilek Line"],
+   ["1836–38","Isatai and Makhambet","Bukey Horde","Land and taxes; defeats at Tastobe and Akbulak"],
+   ["1837–47","Kenesary","All three Jüzes","Restore Ablai’s state; killed 1847"],
+   ["1856–57","Zhankozha","Syr Darya","Kazaly fort burdens"],
+   ["1847–58","Eset Kotibaruly","West","Mobile resistance; peace 1858"],
+   ["1916","Amangeldy, Abdigappar","Turgay, Jetisu","Conscription decree"]]},
+  {title:"1916: radicals vs. Alash liberals", cols:["","Radicals","Alash liberals"], rows:[["Strategy","Armed revolt","Cautious negotiation"],["Concern","Immediate resistance","Preventing mass slaughter"]]}],
+ cases: [
+  {t:"Kenesary’s state", d:"Akmola 1838, khan 1841, army, council and tax system."},
+  {t:"Tastobe (1837) and Akbulak (1838)", d:"Defeats of Isatai and Makhambet."},
+  {t:"Decree of June 25, 1916", d:"Conscription of men aged 19–43."},
+  {t:"Jetisu repression", d:"Mass flight to China."},
+  {t:"Turgay centre", d:"Organized army under Amangeldy."}],
+ memorize: ["1773–75 Pugachev; 1783–97 Syrym; 1822–24 Zholaman","1836–38 Isatai and Makhambet; Tastobe 1837, Akbulak 1838","Kenesary 1837–47; Akmola 1838; khan 1841","Eset 1847–58; Zhankozha 1856–57","1916: June 25 decree, ages 19–43"],
+ cheat: {
+  lines: ["Three drivers: land, administration, coercion","Kenesary wanted to restore Ablai’s state","Isatai = military; Makhambet = poet","1916: Turgay (Amangeldy) vs. Jetisu (flight to China)"],
+  qa: [
+   {q:"What drove Kazakh resistance?", a:"Land loss (fort lines, “surplus” rules), administrative change (1822–24 statutes) and coercion (taxes, requisitions, punitive raids)."},
+   {q:"What was Kenesary Kasymuly’s programme?", a:"Abolish okrugs and forts and restore Ablai Khan’s sovereign state; he built an army, council and tax system and was elected khan in 1841."},
+   {q:"Compare Isatai and Makhambet.", a:"Isatai led the military side, Makhambet was the poetic and political voice; both opposed land concentration and taxes under Zhangir Khan, and were defeated at Tastobe and Akbulak."},
+   {q:"What triggered the 1916 uprising?", a:"The Tsar’s June 25, 1916 decree conscripting men aged 19–43 for rear labour in WWI."},
+   {q:"How did the intelligentsia change resistance?", a:"It moved to schools, newspapers and political programs on land, language and autonomy; in 1916 Alash liberals favoured negotiation over armed revolt."}]}
+},
+{
+ id: 6, title: "Kazakhstan from 1917 to 1940: WWI, Revolutions, Alash & Early Soviet Rule",
+ subtitle: "From wartime crisis and competing autonomies to Soviet state-building without sovereignty",
+ tags: ["WWI", "Alash Autonomy", "War Communism", "NEP", "Kazakh SSR"],
+ overview: [
+  "World War I multiplied the burdens on the Kazakh steppe: taxes quadrupled, huge numbers of horses, camels and yurts were requisitioned, and miners worked 14-hour days. Settler pressure from the 1886/1891 Regulations and the Stolypin Reforms (1906–1912) fed the 1916 Uprising. The February and October Revolutions of 1917 then collapsed Tsarist rule.",
+  "Three projects competed for the steppe: the Bolsheviks, the Alash Party and its autonomy, and the Turkestan Autonomy. The Civil War (1918–1920) ended in Soviet consolidation. The lecture traces War Communism, NEP and the stages of Kazakh state-building within the USSR, where korenizatsiya promoted Kazakh cadres but real power stayed with the Party."],
+ concepts: [
+  {t:"1914–1917", d:"WWI: taxes quadrupled; 70,000 horses, 13,000 camels and 14,000 yurts requisitioned; 14-hour mine shifts."},
+  {t:"1906–1912", d:"Stolypin Reforms: ~500,000 peasant households relocated to the steppe."},
+  {t:"1916", d:"Uprising: ~50,000 rebels in Turgay under Amangeldy Imanov and Alibi Dzhangeldin."},
+  {t:"1917", d:"February and October Revolutions collapse Tsarist rule."},
+  {t:"Alash Autonomy", d:"Kazakh autonomy within a democratic federal Russia (Bukeikhanov, Baitursynov, Dulatuly)."},
+  {t:"1918–1920", d:"Civil War ends with Soviet consolidation."},
+  {t:"War Communism (1918–1921)", d:"Nationalization and prodrazvyorstka (forced grain and livestock requisition)."},
+  {t:"1921–1922", d:"Famine: 2 million starving by March 1922."},
+  {t:"NEP (1921–late 1920s)", d:"Tax in kind, limited private trade; recovery by 1925–26."},
+  {t:"1919 → 1920 → 1925", d:"Kazrevkom → Kirgiz ASSR → renamed Kazakh ASSR (within RSFSR)."},
+  {t:"1924 / 1936", d:"National-territorial delimitation; Kazakh SSR becomes a full Union republic."},
+  {t:"Korenizatsiya", d:"Nativization: Kazakh language and local cadres, but real power stayed with the Party."}],
+ notes: [
+  {h:"WWI and the road to 1916", pts:["Taxes quadrupled; mass requisitions of horses, camels and yurts","14-hour workdays in mines","Settler pressure: 1886/1891 Regulations, Stolypin Reforms (~500,000 households)","1916 Uprising: 50,000 rebels in Turgay (Imanov, Dzhangeldin)"]},
+  {h:"1917 and competing autonomies", pts:["Bolsheviks (Lenin) vs. Alash Party (Bukeikhanov, Baitursynov, Dulatuly) vs. Turkestan Autonomy","Dulatuly: author of “Oyan, Qazaq!” (1909)","Alash sought autonomy in a democratic federal Russia"]},
+  {h:"Early Soviet economic policy", pts:["War Communism: nationalization and forced requisition → 1921–22 famine","NEP: tax in kind and limited private trade; recovery by 1925–26"]},
+  {h:"State-building without sovereignty", pts:["Kazrevkom (1919) → Kirgiz ASSR (1920; Kazakh ASSR from 1925) → delimitation (1924) → Kazakh SSR (1936)","Korenizatsiya promoted language and local cadres, but the Communist Party held real power"]},
+  {h:"Early collectivization and industrialization", pts:["Grain procurement crisis, djut (winter ice killing livestock), dekulakization","Otkochevka: mass flight to China, Russia and Mongolia","Turksib railway (painted by Abylkhan Kasteyev); mining hubs Karaganda and Ridder"]}],
+ figures: [
+  {n:"Amangeldy Imanov", life:"1916", role:"Turgay commander", contrib:"Led the 1916 rebels with Alibi Dzhangeldin."},
+  {n:"Alibi Dzhangeldin", life:"1916", role:"Turgay leader", contrib:"Co-led ~50,000 rebels in Turgay."},
+  {n:"Alikhan Bukeikhanov", life:"1917", role:"Alash leader", contrib:"Head of the Alash Party and Alash Autonomy."},
+  {n:"Akhmet Baitursynov", life:"1917", role:"Alash leader", contrib:"Alash Autonomy project."},
+  {n:"Mirzhakyp Dulatuly", life:"1909; 1917", role:"Poet, Alash figure", contrib:"Author of “Oyan, Qazaq!” (1909); sought autonomy in a democratic federal Russia."},
+  {n:"V.I. Lenin", life:"1917", role:"Bolshevik leader", contrib:"Led the Bolshevik project that won the Civil War."},
+  {n:"Abylkhan Kasteyev", life:"Soviet era", role:"Artist", contrib:"Painted the Turksib railway."}],
+ compare: [
+  {title:"Early Soviet economic policies", cols:["","War Communism (1918–21)","NEP (1921–late 1920s)"], rows:[["Methods","Nationalization; prodrazvyorstka","Tax in kind; limited private trade"],["Outcome","1921–22 famine; 2 million starving","Economic recovery by 1925–26"]]},
+  {title:"Stages of Kazakh statehood in the USSR", cols:["Year","Form","Note"], rows:[["1919","Kazrevkom","Revolutionary committee"],["1920","Kirgiz ASSR","Within RSFSR; renamed Kazakh ASSR in 1925"],["1924","National-territorial delimitation","Borders redrawn"],["1936","Kazakh SSR","Full Union republic"]]}],
+ cases: [
+  {t:"1916 Uprising in Turgay", d:"~50,000 rebels under Imanov and Dzhangeldin."},
+  {t:"Alash Autonomy", d:"Alternative to Bolshevik rule: federal democratic Russia."},
+  {t:"1921–22 famine", d:"Consequence of forced requisitions."},
+  {t:"Turksib", d:"Rail link and symbol of industrialization."},
+  {t:"Karaganda and Ridder", d:"Mining hubs of early Soviet industrialization."}],
+ memorize: ["WWI: 70,000 horses, 13,000 camels, 14,000 yurts","Stolypin 1906–12: ~500,000 households","Civil War 1918–20; War Communism 1918–21; NEP 1921","Kazakh ASSR 1925; Kazakh SSR 1936","Dulatuly’s “Oyan, Qazaq!” (1909)"],
+ cheat: {
+  lines: ["Three projects: Bolsheviks, Alash, Turkestan Autonomy","War Communism → famine; NEP → recovery","Statehood without sovereignty: Party held real power","Djut, dekulakization, otkochevka = collectivization vocabulary"],
+  qa: [
+   {q:"How did WWI and settlement policy fuel the 1916 Uprising?", a:"Taxes quadrupled, horses, camels and yurts were requisitioned, miners worked 14-hour days, and land was lost to settlers under the 1886/1891 Regulations and Stolypin Reforms."},
+   {q:"What did the Alash Autonomy propose?", a:"Kazakh autonomy within a democratic federal Russia, led by Bukeikhanov, Baitursynov and Dulatuly."},
+   {q:"Compare War Communism and NEP.", a:"War Communism used nationalization and forced requisitions and led to the 1921–22 famine; NEP used a tax in kind and limited private trade and brought recovery by 1925–26."},
+   {q:"What does “state-building without sovereignty” mean?", a:"Kazakh territorial forms (Kazrevkom, ASSR, SSR) were created and korenizatsiya promoted local cadres, yet real power stayed with the Communist Party."},
+   {q:"Which concepts describe early collectivization?", a:"Grain procurement crisis, djut, dekulakization and otkochevka (mass flight to China, Russia and Mongolia)."}]}
+},
+{
+ id: 7, title: "Specificity of Political and Socio-Economic Modernization of Soviet Power",
+ subtitle: "Little October, industrialization, collectivization, Asharshylyk and the Great Terror",
+ tags: ["Goloshchekin", "Turksib", "Asharshylyk", "Collectivization", "Great Terror"],
+ overview: [
+  "Soviet modernization from above aimed to turn a pastoral nomadic society, where mobility was an ecological adaptation (Sarah Cameron), into a centralized industrial socialist state through coercion. Filipp Goloshchekin’s “Little October” (from 1925) and the confiscation of bais in 1928 attacked traditional social networks.",
+  "The First Five-Year Plan prioritized raw materials, and collectivization and forced sedentarization (1930–1933) destroyed nomadic pastoralism and caused Asharshylyk, a catastrophe costing about 1.5 million lives. The Great Terror of 1937–1938 then eliminated the Kazakh political and cultural elite."],
+ concepts: [
+  {t:"1925", d:"Goloshchekin appointed; claims the aul had not “felt the breath of October”."},
+  {t:"“Little October”", d:"Campaign of class struggle in the aul."},
+  {t:"1928", d:"Confiscation and deportation of wealthy bais."},
+  {t:"1928–1932", d:"First Five-Year Plan: Karaganda coal, Emba oil, copper and polymetals."},
+  {t:"Turksib (1,440 km)", d:"Railway linking Central Asia and Siberia."},
+  {t:"Dec 31, 1928", d:"Sergiopol ethnic clashes (historian Matthew Payne)."},
+  {t:"2% → 50.5% → 65%", d:"Collectivization: 1928, Spring 1930, Autumn 1931."},
+  {t:"Asharshylyk (1930–33)", d:"~1.5 million deaths (~40% of Kazakhs); >1 million refugees."},
+  {t:"40M → 4.5M", d:"Livestock collapse by 1933."},
+  {t:"1932 / March 1933", d:"“Letter of the Five”; Ryskulov’s letter to Stalin — unheeded."},
+  {t:"1937–1938", d:"Great Terror executes Kazakh elites."},
+  {t:"Cameron vs. Pianciola", d:"Debate over the cause of the famine."}],
+ notes: [
+  {h:"Modernization from above", pts:["Pastoral nomadism, with mobility as ecological adaptation (Sarah Cameron)","Coercive transformation into an industrial socialist state"]},
+  {h:"Goloshchekin and “Little October”", pts:["Claimed the aul had not “felt the breath of October”","1928: bais confiscated and deported to destroy traditional networks","Critics labelled “national deviationists”"]},
+  {h:"Industrialization", pts:["Raw materials first: Karaganda coal, Emba oil, copper and polymetals","Debate: Goloshchekin (extraction for the USSR) vs. Smagul Sadvakasov (local processing and Kazakh specialists)","Turksib: 1,440 km; 50% local Kazakh workers targeted (1928); ethnic clashes at Sergiopol"]},
+  {h:"Collectivization and Asharshylyk", pts:["2% (1928) → 50.5% (Spring 1930) → 65% (Autumn 1931)","Forced settlement destroyed nomadic pastoralism","~1.5 million deaths (90% Kazakhs), >1 million refugees; livestock 40M → 4.5M"]},
+  {h:"Historiographical debate", pts:["Cameron: forced sedentarization and destruction of pastoralism","Pianciola: excessive meat and livestock procurement after July 1930 (“Stalinist hierarchy of consumption”)"]},
+  {h:"Warnings and Great Terror", pts:["1932 “Letter of the Five”; March 1933 Ryskulov’s letter — unheeded","1937–38 victims: Bokeikhan, Baitursynuly, Ryskulov, Seifullin, Zhurgenov"]}],
+ figures: [
+  {n:"Filipp Goloshchekin", life:"from 1925", role:"First Secretary", contrib:"“Little October”; raw-material industrialization."},
+  {n:"Smagul Sadvakasov", life:"1920s", role:"Kazakh leader", contrib:"Advocated local processing and Kazakh specialists."},
+  {n:"Turar Ryskulov", life:"d. 1937–38", role:"Party leader", contrib:"Letter to Stalin (March 1933); executed in the Terror."},
+  {n:"Alikhan Bokeikhan", life:"d. 1937–38", role:"Alash leader", contrib:"Executed in the Great Terror."},
+  {n:"Akhmet Baitursynuly", life:"d. 1937–38", role:"Alash leader, scholar", contrib:"Executed in the Great Terror."},
+  {n:"Saken Seifullin", life:"d. 1937–38", role:"Writer", contrib:"Executed in the Great Terror."},
+  {n:"Temirbek Zhurgenov", life:"d. 1937–38", role:"Cultural figure", contrib:"Executed in the Great Terror."},
+  {n:"Sarah Cameron", life:"modern", role:"Historian", contrib:"Famine caused by forced sedentarization."},
+  {n:"Niccolò Pianciola", life:"modern", role:"Historian", contrib:"Famine caused by excessive procurements."},
+  {n:"Matthew Payne", life:"modern", role:"Historian", contrib:"Studied Turksib ethnic clashes."}],
+ compare: [
+  {title:"Industrialization debate", cols:["","Goloshchekin","Sadvakasov"], rows:[["Priority","Raw-material extraction for the USSR","Local processing industries"],["Workforce","Imported labour","Training Kazakh specialists"]]},
+  {title:"Causes of Asharshylyk", cols:["","Sarah Cameron","Niccolò Pianciola"], rows:[["Cause","Forced sedentarization; destruction of pastoralism","Excessive meat and livestock procurement"],["Key idea","Mobility was ecological adaptation","“Stalinist hierarchy of consumption” after July 1930"]]},
+  {title:"Collectivization rate", cols:["Date","Share collectivized"], rows:[["1928","2%"],["Spring 1930","50.5%"],["Autumn 1931","65%"]]}],
+ cases: [
+  {t:"Turksib (1,440 km)", d:"Linked Central Asia and Siberia; 50% local workers targeted."},
+  {t:"Sergiopol clashes (Dec 31, 1928)", d:"Ethnic conflict among workers."},
+  {t:"Asharshylyk", d:"~1.5 million deaths; livestock 40M → 4.5M."},
+  {t:"Letters of warning", d:"“Letter of the Five” (1932) and Ryskulov (1933) ignored."},
+  {t:"Great Terror", d:"Executed Kazakh elites in 1937–38."}],
+ memorize: ["Goloshchekin 1925; bais deported 1928","First Five-Year Plan 1928–32; Turksib 1,440 km","Collectivization 2% → 50.5% → 65%","~1.5 million dead (90% Kazakhs, ~40% of Kazakhs); livestock 40M → 4.5M","Cameron vs. Pianciola; Great Terror 1937–38"],
+ cheat: {
+  lines: ["Goloshchekin: “Little October”","Raw materials first: coal, oil, copper","Asharshylyk 1930–33: ~40% of Kazakhs lost","Cameron: sedentarization; Pianciola: procurement"],
+  qa: [
+   {q:"What was Goloshchekin’s “Little October”?", a:"A campaign from 1925 based on the claim that the aul had not “felt the breath of October”; in 1928 bais were confiscated and deported to destroy traditional networks."},
+   {q:"What was the Goloshchekin–Sadvakasov debate?", a:"Goloshchekin favoured raw-material extraction for the USSR; Sadvakasov argued for local processing industries and training Kazakh specialists."},
+   {q:"What were the consequences of collectivization?", a:"~1.5 million deaths (about 40% of Kazakhs), over 1 million refugees and livestock falling from 40 million to 4.5 million by 1933."},
+   {q:"Compare Cameron and Pianciola.", a:"Cameron blames forced sedentarization and the destruction of pastoralism; Pianciola blames excessive meat and livestock procurement under the “Stalinist hierarchy of consumption” after July 1930."},
+   {q:"Who fell in the 1937–38 Great Terror?", a:"Kazakh elites including Bokeikhan, Baitursynuly, Ryskulov, Seifullin and Zhurgenov."}]}
+},
+{
+ id: 8, title: "Soviet Reforms in the Second Half of the 20th Century (1945–1991)",
+ subtitle: "Late Stalinism, nuclear frontier, Virgin Lands, stagnation, Zheltoksan and independence",
+ tags: ["Semipalatinsk", "Virgin Lands", "Kunaev", "Zheltoksan", "Independence"],
+ overview: [
+  "After WWII, about 1.2 million Kazakhstanis were mobilized (410,000+ killed or missing). Late Stalinism brought a 1947 monetary reform and ideological purges against “bourgeois nationalism”. Kazakhstan also became a Soviet testing ground: the Semipalatinsk site and, under Khrushchev, the Virgin Lands Campaign.",
+  "Under Brezhnev, Kunaev led a “stagnant prosperity” with a social contract but an inefficient command economy and ecological disasters. National consciousness grew through the 1960s–1980s, erupted in Zheltoksan (December 1986), and led through Perestroika to the Sovereignty Declaration (1990) and Independence (December 16, 1991)."],
+ concepts: [
+  {t:"1.2 million", d:"Mobilized in WWII; 410,000+ killed or missing."},
+  {t:"1947", d:"Monetary reform and end of rationing."},
+  {t:"Aug 29, 1949", d:"First Soviet atomic test RDS-1 at Semipalatinsk."},
+  {t:"1949–1989", d:"456 nuclear tests (86 atmospheric, 30 surface, 340 underground); 17.7 megatons ≈ 1,000 Hiroshimas."},
+  {t:"1956", d:"XX Party Congress denounces Stalin’s cult of personality."},
+  {t:"1954", d:"Virgin Lands Campaign (Tselina)."},
+  {t:"5.8M → 22M ha", d:"Grain area by 1960."},
+  {t:"29–30%", d:"Kazakh share of population by the late 1950s."},
+  {t:"1959", d:"Temirtau workers’ unrest at the Karaganda Metallurgical Plant."},
+  {t:"1964–1986", d:"Kunaev era: “stagnant prosperity”."},
+  {t:"June 1979", d:"Tselinograd protests stop the German Autonomous Region plan."},
+  {t:"Dec 16–17, 1986", d:"Zheltoksan; 2,366 detained."},
+  {t:"1988 / 1989 / 1990 / 1991", d:"Alash rehabilitation; state language law; Sovereignty Declaration (Oct 25); Independence (Dec 16)."}],
+ notes: [
+  {h:"Post-war and late Stalinism", pts:["1.2 million mobilized; 410,000+ killed or missing","1947 monetary reform and end of rationing","Purges against “bourgeois nationalism”: Bekmakhanov (25 years for his Kenesary work), Zhubanov, Mukhamedkhanov (Abai studies)"]},
+  {h:"Nuclear frontier", pts:["Semipalatinsk Test Site: RDS-1 on Aug 29, 1949","456 tests 1949–89: 86 atmospheric, 30 surface, 340 underground","17.7 megatons ≈ 1,000 Hiroshima bombs (Togzhan Kassenova)"]},
+  {h:"Khrushchev: Thaw and Virgin Lands", pts:["1956 XX Congress; partial rehabilitation","1954 Tselina: 5.8M → 22M ha by 1960; 1–2 million Slavic settlers","Costs: wind erosion, Kazakhs only 29–30% of population, Russification","1959 Temirtau unrest over living conditions"]},
+  {h:"Brezhnev and Kunaev", pts:["Kunaev led Kazakhstan 1964–1986","Social contract: jobs, housing, healthcare, education","Command-economy inefficiency (“pyramid of command”, Heilbroner), shortages, blat","Semipalatinsk radiation and Aral Sea desiccation"]},
+  {h:"National consciousness and Perestroika", pts:["1960s youth groups: Zhas Tulpar, Taishubar, Zhas Ulan, Saryarka","June 1979 Tselinograd protests","1985 Gorbachev: Perestroika, Glasnost, Acceleration (Marshall Goldman)"]},
+  {h:"Zheltoksan to independence", pts:["Dec 16–17, 1986: Alma-Ata protests after Kolbin replaced Kunaev; 2,366 detained","1988 Alash rehabilitation; 1989 Kazakh state language","Nevada-Semipalatinsk movement; Azat, Qazaq Tili, Adilet","Oct 25, 1990 Sovereignty Declaration; Dec 16, 1991 Independence"]}],
+ figures: [
+  {n:"Yermukhan Bekmakhanov", life:"1950s purges", role:"Historian", contrib:"Sentenced to 25 years for work on Kenesary."},
+  {n:"Akhmet Zhubanov", life:"1950s purges", role:"Composer", contrib:"Targeted as a “bourgeois nationalist”."},
+  {n:"Qaiym Mukhamedkhanov", life:"1950s purges", role:"Scholar", contrib:"Abai studies; purged."},
+  {n:"Nikita Khrushchev", life:"1953–1964", role:"Soviet leader", contrib:"Thaw; Virgin Lands Campaign."},
+  {n:"Dinmukhamed Kunaev", life:"1964–1986", role:"Head of Kazakhstan", contrib:"Era of “stagnant prosperity”."},
+  {n:"Gennady Kolbin", life:"1986", role:"Appointed leader", contrib:"Replacement of Kunaev triggered Zheltoksan."},
+  {n:"Mikhail Gorbachev", life:"from 1985", role:"Soviet leader", contrib:"Perestroika, Glasnost, Acceleration."},
+  {n:"Togzhan Kassenova", life:"modern", role:"Scholar", contrib:"Analyses of the nuclear legacy."},
+  {n:"Michaela Pohl", life:"modern", role:"Historian", contrib:"“Planet of One Hundred Languages”."}],
+ compare: [
+  {title:"Khrushchev vs. Brezhnev eras", cols:["","Khrushchev (1953–64)","Brezhnev / Kunaev (1964–86)"], rows:[["Policy","Thaw; Virgin Lands","“Stagnant prosperity”"],["Demography/economy","1–2 million settlers; Kazakhs 29–30%","Social contract; shortages and blat"],["Ecology","Wind erosion","Semipalatinsk radiation; Aral Sea"]]},
+  {title:"Road to independence", cols:["Date","Event"], rows:[["Dec 16–17, 1986","Zheltoksan"],["1988","Rehabilitation of Alash figures"],["1989","Kazakh made state language"],["Oct 25, 1990","Sovereignty Declaration"],["Dec 16, 1991","Independence"]]}],
+ cases: [
+  {t:"Semipalatinsk Test Site", d:"456 tests from 1949 to 1989."},
+  {t:"Virgin Lands Campaign", d:"Grain area 5.8M → 22M ha; Slavic settlers; erosion."},
+  {t:"Temirtau unrest (1959)", d:"Karaganda Metallurgical Plant."},
+  {t:"Tselinograd protests (1979)", d:"Stopped the German Autonomous Region."},
+  {t:"Zheltoksan (1986)", d:"Alma-Ata protests suppressed by troops."}],
+ memorize: ["WWII: 1.2M mobilized, 410,000+ killed or missing","RDS-1: Aug 29, 1949; 456 tests; 17.7 megatons","Virgin Lands 1954: 5.8M → 22M ha; Kazakhs 29–30%","Kunaev 1964–86; Zheltoksan Dec 16–17, 1986; 2,366 detained","Sovereignty Oct 25, 1990; Independence Dec 16, 1991"],
+ cheat: {
+  lines: ["Semipalatinsk: 456 tests, 340 underground","Tselina: grain up, Kazakh share down","Kunaev replaced by outsider Kolbin → Zheltoksan","1988 Alash rehabilitated; 1989 state language"],
+  qa: [
+   {q:"What was the Semipalatinsk Test Site’s impact?", a:"After RDS-1 (Aug 29, 1949), 456 nuclear tests until 1989 (86 atmospheric, 30 surface, 340 underground; 17.7 megatons, about 1,000 Hiroshimas)."},
+   {q:"What were the results of the Virgin Lands Campaign?", a:"Grain area rose from 5.8 to 22 million ha by 1960 and 1–2 million Slavic settlers arrived, but erosion followed and Kazakhs fell to 29–30% of the population, with growing Russification."},
+   {q:"What characterized the Kunaev era?", a:"“Stagnant prosperity”: a social contract of jobs, housing, healthcare and education, but an inefficient command economy, shortages, blat, and ecological disasters (Semipalatinsk, Aral Sea)."},
+   {q:"What caused Zheltoksan?", a:"Kunaev’s replacement by outsider Gennady Kolbin; Alma-Ata protests on Dec 16–17, 1986 were suppressed by troops, with 2,366 detained."},
+   {q:"How did Kazakhstan reach independence?", a:"Through Perestroika and Glasnost, Alash rehabilitation (1988), the state language law (1989), anti-nuclear and national movements, the Sovereignty Declaration (Oct 25, 1990) and Independence (Dec 16, 1991)."}]}
+},
+{
+ id: 9, title: "Revival of National Statehood & Independent Kazakhstan (1990–2025)",
+ subtitle: "Sovereignty, constitutional evolution, economic transition and demographic change",
+ tags: ["Independence", "Constitutions", "2022 Referendum", "Tenge", "Oil", "Qandas"],
+ overview: [
+  "Kazakhstan’s road to statehood ran from the Declaration on State Sovereignty (Oct 25, 1990) through the failed GKChP coup (Aug 19–21, 1991) to the Constitutional Law on State Independence (Dec 16, 1991). Joining the UN (March 2, 1992), completing nuclear disarmament by 1995 and launching a multi-vector foreign policy defined the early state.",
+  "The lecture then follows constitutional change from the 1993 dual-power constitution to the strong presidency of 1995 and the 2022 reforms, the shock and recovery of the economy (tenge, oil boom, National Fund, AIFC), demographic change, and 2025 global indicators, read through the Acemoglu–Robinson framework of inclusive vs. extractive institutions."],
+ concepts: [
+  {t:"Oct 25, 1990", d:"Declaration on State Sovereignty: indivisible territory, republican authority."},
+  {t:"Aug 19–21, 1991", d:"Failed GKChP coup in Moscow accelerates the USSR’s collapse."},
+  {t:"Dec 16, 1991", d:"Constitutional Law on State Independence: democratic, law-governed state combining Kazakh self-determination and civic equality."},
+  {t:"March 2, 1992", d:"Kazakhstan joins the UN."},
+  {t:"By 1995", d:"Nuclear disarmament completed; multi-vector foreign policy launched."},
+  {t:"1993 Constitution", d:"Dual powers: President and Supreme Soviet; crises in 1993 and 1995."},
+  {t:"Aug 30, 1995", d:"Constitution establishes a strong presidential system."},
+  {t:"2010", d:"Elbasy status links stability to one leader."},
+  {t:"June 5, 2022", d:"Constitutional Referendum after the January 2022 crisis."},
+  {t:"Nov 15, 1993", d:"Tenge introduced (after 1993 hyperinflation above 2,000%)."},
+  {t:"1990s shock", d:"Output fell 40–50%; 1992 price liberalization; voucher privatization."},
+  {t:"2000", d:"National Fund created; oil boom (Tengiz, Karachaganak, Kashagan)."},
+  {t:"Demography", d:"~15M (1999) → over 20M (2024–25); Kazakhs ~53% (1999) → ~70% (2021)."}],
+ notes: [
+  {h:"Path to independence", pts:["Oct 25, 1990 Declaration on State Sovereignty","Aug 19–21, 1991 GKChP coup failed","Dec 16, 1991 Constitutional Law on State Independence","March 2, 1992 UN membership; denuclearization completed by 1995"]},
+  {h:"Constitutional evolution", pts:["1993: dual powers → political crises in 1993 and 1995 (Martha Brill Olcott)","Aug 30, 1995: strong presidential system","2010 Elbasy status tied stability to one leader"]},
+  {h:"Acemoglu & Robinson framework", pts:["Inclusive institutions: broad market access, rule of law, accountability","Extractive institutions: concentrated power, political capitalism, rents"]},
+  {h:"2022 reforms", pts:["Constitutional Court restored","Mixed electoral system and lower party threshold","Reduced presidential quotas; Elbasy clauses removed","President’s close relatives barred from senior posts"]},
+  {h:"Economy", pts:["1990s: output down 40–50%; price liberalization (1992); hyperinflation >2,000% (1993); tenge (Nov 15, 1993); voucher privatization","2000s oil boom: Tengiz, Karachaganak, Kashagan (~90M tons/yr by late 2010s); National Fund (2000); AIFC with English common law"]},
+  {h:"Demography and 2025 indicators", pts:["Population ~15M (1999) → over 20M (2024–25); Kazakhs ~53% → ~70%; more than 1M qandas repatriated","GDP per capita ~$14,700; HDI 0.837 (60th/193); Global Innovation Index 81st","Rule of Law Index 0.54 (66th/143); Corruption Perceptions Index 38/100 (96th/182)"]}],
+ figures: [
+  {n:"Nursultan Nazarbayev", life:"First President; Elbasy status from 2010", role:"President", contrib:"Led the 1995 strong-presidency system; 2010 Elbasy status linked stability to one leader."},
+  {n:"Martha Brill Olcott", life:"modern", role:"Scholar", contrib:"Analysed the 1993 and 1995 political crises."},
+  {n:"Daron Acemoglu and James Robinson", life:"modern", role:"Economists", contrib:"Why Nations Fail: inclusive vs. extractive institutions."},
+  {n:"Qandas", life:"1990s–present", role:"Repatriated ethnic Kazakhs", contrib:"More than 1 million returned, raising the Kazakh share to ~70%."}],
+ compare: [
+  {title:"1993 vs. 1995 Constitutions", cols:["","1993","1995"], rows:[["Power structure","Dual: President and Supreme Soviet","Strong presidential system"],["Aftermath","Political crises in 1993 and 1995","Consolidated presidency"]]},
+  {title:"Inclusive vs. extractive institutions", cols:["","Inclusive","Extractive"], rows:[["Features","Broad market access, rule of law, accountability","Concentrated power, rents, political capitalism"]]},
+  {title:"2025 indicators", cols:["Indicator","Value","Rank"], rows:[["GDP per capita","~$14,700","–"],["Human Development Index","0.837","60th/193"],["Global Innovation Index","–","81st"],["Rule of Law Index","0.54","66th/143"],["Corruption Perceptions Index","38/100","96th/182"]]}],
+ cases: [
+  {t:"1993 hyperinflation and the tenge", d:"Inflation above 2,000%; tenge introduced Nov 15, 1993."},
+  {t:"Oil boom", d:"Tengiz, Karachaganak, Kashagan; ~90M tons/yr by the late 2010s."},
+  {t:"AIFC", d:"A financial centre under English common law."},
+  {t:"2022 Referendum", d:"Restored the Constitutional Court; removed Elbasy clauses."},
+  {t:"Qandas repatriation", d:"More than 1 million returned."}],
+ memorize: ["Sovereignty Oct 25, 1990; independence Dec 16, 1991; UN March 2, 1992","Constitutions: 1993 (dual) → Aug 30, 1995 (strong presidency)","Tenge Nov 15, 1993; hyperinflation >2,000%; output down 40–50%","Referendum June 5, 2022","HDI 0.837 (60th); CPI 38/100 (96th); Rule of Law 0.54 (66th)"],
+ cheat: {
+  lines: ["Coup Aug 1991 → independence Dec 1991","Nuclear disarmament by 1995","1995 Constitution = strong presidency","2022 referendum removed Elbasy clauses","Oil + National Fund (2000) + AIFC"],
+  qa: [
+   {q:"Outline the steps to Kazakhstan’s independence.", a:"The Declaration on State Sovereignty (Oct 25, 1990), the failed GKChP coup (Aug 19–21, 1991) and the Constitutional Law on State Independence (Dec 16, 1991); UN membership followed on March 2, 1992."},
+   {q:"How did the political system change between 1993 and 1995?", a:"The 1993 Constitution created dual powers (President and Supreme Soviet), leading to crises in 1993 and 1995; the Aug 30, 1995 Constitution established a strong presidential system."},
+   {q:"What did the June 2022 referendum change?", a:"It restored the Constitutional Court, introduced a mixed electoral system and lower party threshold, reduced presidential quotas, removed Elbasy clauses and barred the president’s close relatives from senior posts."},
+   {q:"Describe the economic transition.", a:"The 1990s brought a 40–50% output fall, price liberalization, hyperinflation above 2,000% and the tenge (Nov 15, 1993); the 2000s oil boom brought the National Fund (2000) and the AIFC."},
+   {q:"What does the Acemoglu–Robinson framework say?", a:"Inclusive institutions (broad market access, rule of law, accountability) support prosperity; extractive institutions concentrate power and rents."}]}
+},
+{
+ id: 10, title: "Foreign Policy & International Relations of the Republic of Kazakhstan",
+ subtitle: "Multi-vector diplomacy, transport corridors, regional integration and middle-power initiatives",
+ tags: ["Multi-vector", "EAEU", "Middle Corridor", "OTS", "Caspian", "CICA"],
+ overview: [
+  "Four structural factors shape Kazakh foreign policy: geography (landlocked between Russia and China), natural resources (oil, gas, uranium, metals), the Soviet infrastructural legacy and security (borders, nuclear disarmament). Four transport corridors link the country to the world: Northern (Russia), Eastern (China), Western (the Middle Corridor via the Caspian and South Caucasus) and Southern (Iran, the Persian Gulf, South Asia).",
+  "Astana practises a multi-vector policy, a diversification of dependence among Russia, China, the USA and EU, Central Asia, the Gulf and wider Asia. It joins regional blocs (EAEU, OTS, SCO, CSTO), settled the Caspian’s legal status in 2018 and acts as a middle power in non-proliferation, dialogue and mediation."],
+ concepts: [
+  {t:"Four structural factors", d:"Geography, natural resources, Soviet infrastructure legacy, security."},
+  {t:"Four corridors", d:"Northern (Russia), Eastern (China), Western/Middle (Caspian and South Caucasus), Southern (Iran, Gulf, South Asia)."},
+  {t:"Multi-vector policy", d:"Diversification of dependence among major partners."},
+  {t:"EAEU (proposed 1994)", d:"Nazarbayev’s proposal: free movement of goods, services, capital and labour without political subordination."},
+  {t:"2013", d:"Silk Road Economic Belt announced in Astana."},
+  {t:"2009 / 2021", d:"Turkic Council founded; renamed Organization of Turkic States (OTS)."},
+  {t:"Middle Corridor", d:"Caspian–Azerbaijan–Turkey route promoted by the OTS."},
+  {t:"Aug 2018", d:"Caspian Sea Convention signed in Aktau by five littoral states."},
+  {t:"OPEC+", d:"Participation to balance oil production and revenues."},
+  {t:"2010", d:"OSCE Chairmanship."},
+  {t:"CICA", d:"Conference on Interaction and Confidence-Building Measures in Asia."},
+  {t:"Astana mediation", d:"Iran nuclear talks, Astana Process on Syria, Armenia–Azerbaijan dialogue."}],
+ notes: [
+  {h:"Structural factors and corridors", pts:["Landlocked between Russia and China","Oil, gas, uranium and metals","Soviet infrastructure legacy; security and nuclear disarmament","Corridors: Northern, Eastern, Western (Middle), Southern"]},
+  {h:"Multi-vector policy by partner", pts:["Russia: trade, energy, transit, security; EAEU","China: investment, infrastructure, transit; Silk Road Economic Belt (2013)","USA and EU: technology, investment, markets","Central Asia, Gulf and Asia: Uzbekistan; UAE, Saudi Arabia, Qatar; India"]},
+  {h:"Turkic integration and the Caspian", pts:["Turkic Council (2009) → OTS (2021): trade, digitalization, Middle Corridor","Aug 2018 Caspian Convention: waters, seabed, resources, pipelines, security","OPEC+ participation"]},
+  {h:"International organizations", pts:["UN: disarmament, counterterrorism, Afghanistan","OSCE (2010 chairmanship), SCO, CSTO, development banks"]},
+  {h:"Middle-power diplomacy", pts:["Non-proliferation (closure of Semipalatinsk)","CICA; Congress of Leaders of World and Traditional Religions in Astana","Mediation: Iran nuclear talks, Astana Process on Syria, Armenia–Azerbaijan dialogue"]}],
+ figures: [
+  {n:"Nursultan Nazarbayev", life:"1994", role:"First President", contrib:"Proposed the Eurasian Economic Union in 1994."},
+  {n:"Kassym-Jomart Tokayev", life:"President since 2019", role:"President and diplomat", contrib:"Advances multi-vector diplomacy and Middle Corridor cooperation."},
+  {n:"Xi Jinping", life:"2013", role:"President of China", contrib:"Announced the Silk Road Economic Belt in Astana in 2013."}],
+ compare: [
+  {title:"Transport corridors", cols:["Corridor","Direction / route"], rows:[["Northern","Russia"],["Eastern","China"],["Western (Middle Corridor)","Caspian and South Caucasus"],["Southern","Iran, Persian Gulf, South Asia"]]},
+  {title:"Multi-vector partners", cols:["Partner","Main focus"], rows:[["Russia","Trade, energy, transit, security; EAEU"],["China","Investment, infrastructure, transit; Silk Road Economic Belt"],["USA and EU","Technology, investment, markets"],["Central Asia, Gulf, Asia","Uzbekistan; UAE, Saudi Arabia, Qatar; India"]]}],
+ cases: [
+  {t:"Caspian Sea Convention (Aug 2018, Aktau)", d:"Five littoral states agree rules on waters, seabed, resources, pipelines and security."},
+  {t:"Silk Road Economic Belt (2013)", d:"Announced in Astana."},
+  {t:"OSCE Chairmanship (2010)", d:"Showcased Kazakhstan’s middle-power role."},
+  {t:"Astana Process on Syria", d:"A mediation example, with Iran talks and Armenia–Azerbaijan dialogue."},
+  {t:"Closure of Semipalatinsk", d:"Foundation of its non-proliferation diplomacy."}],
+ memorize: ["Four factors: geography, resources, Soviet legacy, security","Four corridors: Northern, Eastern, Western (Middle), Southern","EAEU proposed 1994; Silk Road Belt announced in Astana 2013","Turkic Council 2009 → OTS 2021; Caspian Convention Aug 2018 (Aktau)","OSCE chairmanship 2010; CICA; Astana Process on Syria"],
+ cheat: {
+  lines: ["Multi-vector = diversification of dependence","Middle Corridor: Caspian–Azerbaijan–Turkey","Caspian Convention: five littoral states, Aktau, 2018","Middle-power tools: non-proliferation, CICA, mediation"],
+  qa: [
+   {q:"What are the structural factors of Kazakh foreign policy?", a:"Geography (landlocked between Russia and China), natural resources, the Soviet infrastructural legacy and security (borders and nuclear disarmament)."},
+   {q:"What is multi-vector foreign policy?", a:"A diversification of dependence: balanced ties with Russia (EAEU, security), China (investment, Silk Road Belt), the USA and EU (technology, markets) and Central Asia, the Gulf and wider Asia."},
+   {q:"What is the Middle Corridor and who promotes it?", a:"The Caspian–Azerbaijan–Turkey route, promoted by the Organization of Turkic States (Turkic Council 2009, OTS 2021)."},
+   {q:"What did the 2018 Caspian Sea Convention do?", a:"Signed in Aktau by five littoral states, it set rules on waters, seabed, resources, pipelines and security."},
+   {q:"How does Kazakhstan act as a middle power?", a:"Through non-proliferation (closing Semipalatinsk), CICA, the Congress of Leaders of World and Traditional Religions, the 2010 OSCE chairmanship and mediation (Iran talks, Astana Process on Syria, Armenia–Azerbaijan dialogue)."}]}
+}
+];
+
+const S1 = "Select 1", S2 = "Select 2", S3 = "Select 3";
+const MOCK = [
+[1,1,S2,"Which two archaeological discoveries in Kazakhstan are highlighted as being of global importance?",["The Golden Man from Issyk","Evidence of horse domestication by the Botai culture"]],
+[1,2,S1,"The “civilizational approach” provides a new view of history. What is the main conclusion of this approach regarding nomadic cultures?",["Nomadic societies were advanced and made significant contributions to world history."]],
+[1,3,S1,"How did the domestication of horses in the Botai culture impact life on the steppe and beyond?",["It was a huge innovation that had a worldwide impact."]],
+[1,4,S3,"According to Yuval Noah Harari, what factors laid the foundation for the Cognitive Revolution in human history?",["Emergence of complex social and symbolic structures","Enlargement and complexity of the Homo sapiens brain","Development of language and abstract thinking"]],
+[1,5,"Select 1 – Wrong Answer","Which of the following does NOT constitute a foundational element of statehood?",["Transitory nature in specific historical contexts."]],
+[1,6,S1,"What role did Saka groups play in the Greco–Persian Wars?",["They participated on the side of the Persian Empire."]],
+[1,7,S1,"The Kargaly Diadem is attributed to the material culture of...",["Uysuns."]],
+[2,8,S2,"Which statements describe the Battle of Atlakh in 751?",["Chinese influence declined, but the Arabs did not gain lasting control of Talas","The Karluks changed sides and supported the Arabs against the Tang forces"]],
+[2,9,S1,"Who were the kara budun in the Turkic Khaganate?",["Free herders who formed the main part of the population."]],
+[2,10,S2,"Which developments shaped the early history of the Ashina Turks?",["In the Altai, the Ashina paid iron tribute while gradually uniting several tribes","Rouran pressure caused Ashina groups to migrate to the Altai after 460 CE"]],
+[2,11,S1,"Which statement correctly describes the formation of the Oghuz State?",["It formed along the middle and lower Syr Darya, with Yangikent as its capital."]],
+[2,12,S2,"Which statements correctly describe the Kimaks and Kipchaks?",["The Kimak capital was Imakiya, located in their main settlement area along the Irtysh","After the Kimak decline, the Kipchaks dominated the territory called Desht-i Kipchak"]],
+[2,13,S2,"Which statements describe the cultural development and decline of the Karakhanid State?",["After the Battle of Qatwan, the Western Karakhanids became vassals of the Kara-Khitans","The Karakhanids supported mosques, madrasas, and mausoleums"]],
+[3,14,S2,"Which developments contributed to Temuchin’s rise to power?",["After Yesugei was poisoned by the Tatars, Temuchin’s family was forced into exile","Temuchin built alliances, defeated rival tribes, and became Chinggis Khan in 1206"]],
+[3,15,S2,"Which statements describe the successor states of the Golden Horde and the rule of Abu’l-Khayr?",["Successor states included the Kazan, Crimean, Astrakhan, Sibir, and Qasim khanates","Abu’l-Khayr consolidated the Nomadic Uzbek state and made Sighnaq his capital"]],
+[3,16,S2,"Which definitions correctly describe political concepts used in the Mongol Empire?",["Ulus referred to authority over groups of tribes rather than a precisely bounded territory","Kurultai was a political and military council attended by Mongol and Turkic leaders"]],
+[3,17,S1,"Which statement correctly describes one of the major Kazakh khans?",["Esim Khan conquered Turkestan and established the city as the khanate’s capital."]],
+[4,18,S2,"Which advantages made the Dzungar Khanate especially dangerous to the Kazakhs?",["The Dzungars maintained a centralized state and standing army","The Dzungars used firearms and artillery in major campaigns"]],
+[4,19,S2,"Which changes accompanied the economic and social transformation of the Kazakh steppe?",["Volga-Ural Muslims supported mosques, madrasas, Islamic publishing, and religious education","Orenburg, Petropavlovsk, and Semipalatinsk became important centres of caravan trade"]],
+[4,20,S1,"Which action most clearly showed that Russian claims did not end independent Kazakh diplomacy?",["Abulkhair negotiated independently with Nadir Shah and Khiva."]],
+[4,21,S2,"Which statements describe Kazakh relations with Bukhara, Kokand, and Khiva?",["They were major centers of Islamic culture and commerce","They offered trade and recruits but also conducted raids and invasions"]],
+[4,22,S2,"Which conditions shaped Kazakh foreign policy after Tauke Khan’s death in 1715?",["Internal division encouraged flexible relations with several powerful neighbors","Several khans governed the Great, Middle, and Little Juzes"]],
+[4,23,S2,"Which statements correctly match Kazakh reformers with their contributions?",["Ibrai Altynsarin opened bilingual schools; Abai shaped modern Kazakh literature","Valikhanov studied Kazakh society; Bukeikhanov and Baitursynov promoted autonomy through Qazaq"]],
+[4,24,S1,"From the Kazakh perspective, why did Abulkhair Khan seek Russian subjecthood in the 1730s?",["He sought a military-political alliance against the Dzungars."]],
+[4,25,S2,"What changes followed the 1822 Statute on the Siberian Kirgiz?",["It replaced hereditary leadership with elected local administrative officials","It abolished khanates and created districts and smaller administrative units"]],
+[4,26,S2,"How did Russian officials interpret poddanstvo, or “subject status”?",["It established Russian territorial sovereignty over Kazakh lands","It required taxes and hostages as evidence of loyalty"]],
+[4,27,S2,"What occurred during the “Years of Great Disaster” from 1723 to 1727?",["Dzungar armies captured important cities, including Tashkent and Sayram","Large Kazakh populations suffered displacement and collective trauma"]],
+[4,28,S2,"How did the reforms of 1868 and 1886 strengthen imperial control?",["They declared land state property and Kazakhs only legal users","They centralized control through Steppe and Turkestan Governor-Generalships"]],
+[7,29,S2,"Which ideas formed Smagul Sadvakasov’s industrialization model?",["Sadvakasov supported processing raw materials inside Kazakhstan itself","Sadvakasov favored training more local specialists and cadres"]],
+[7,30,S2,"Why did forced sedentarization damage the pastoral economy?",["It concentrated herders and livestock in permanent settlements","It restricted seasonal access to different grazing lands"]],
+[7,31,S2,"Which features best describe the Soviet model of modernization?",["The state reshaped both economic activity and social structures","The Party directed reforms through centralized state institutions"]],
+[6,32,S2,"Which statements correctly describe the formation of Soviet Kazakhstan?",["Kazakhstan received Union republic status within the Soviet Union in 1936","The Kazrevkom was established in 1919 as Kazakhstan’s governing committee"]],
+[6,33,S2,"Which statements describe War Communism and its effects in Kazakhstan?",["By March 1922, two million residents were suffering from hunger","Industry and banking were placed under direct Soviet state control"]],
+[8,34,S2,"Which statements explain the significance of Zheltoksan in 1986?",["Demonstrators questioned Moscow’s right to choose the republic’s leadership","Kunaev’s replacement by outsider Gennady Kolbin triggered the student protest"]],
+[8,35,S1,"What caused the demonstrations in Tselinograd in 1979?",["Moscow planned a German Autonomous Region in northern Kazakhstan."]],
+[8,36,S2,"Which consequences followed the expansion of the Virgin Lands?",["Kazakhs formed only around thirty percent by the late 1950s","Steppe ploughing caused serious wind erosion throughout northern Kazakhstan"]],
+[8,37,S2,"Which developments shaped post-war reconstruction in Kazakhstan?",["The 1947 monetary reform abolished the wartime ration-card system","More than 200 evacuated enterprises continued operating after the war"]],
+[8,38,S2,"Which statements explain the aims and difficulties of Perestroika?",["Reforms allowed cooperatives and promised state enterprises greater independence","Gorbachev initially aimed to renew socialism rather than destroy it"]],
+[10,39,S1,"Which principle best describes Kazakhstan’s preferred model of Eurasian integration?",["Economic integration without political subordination of members."]],
+[10,40,S2,"Which two fields are central to Kazakhstan’s cooperation in the SCO?",["Developing regional transport and economic connections","Coordinating action against terrorism and violent extremism"]],
+[10,41,S2,"Which two factors made diversification especially important for Kazakhstan’s foreign policy?",["Its landlocked location between major Eurasian powers","Its natural resources attracting investors from several states"]],
+[10,42,S1,"What is the main purpose of Kazakhstan’s multi-vector foreign policy?",["Maintaining several partnerships while avoiding critical dependence."]],
+[9,43,S1,"When did Kazakhstan become a member of the United Nations?",["On 2 March 1992, during early diplomatic recognition."]],
+[10,44,S2,"Which two examples show Kazakhstan acting as a middle power and negotiation platform?",["The Astana Process provided a venue for dialogue on Syria","Almaty hosted negotiations concerning Iran’s nuclear programme"]],
+[10,45,S2,"Which two statements describe the 2018 Caspian Sea Convention?",["Five littoral states adopted the Convention in Aktau","It set rules for waters, seabed, navigation, security, and pipelines"]]
+].map(([lectureId, n, select, q, a]) => ({ id: "m" + n, lectureId, n, select, q, a }));
+
+const DISTR = {
+1:["The Terracotta Army of Otrar","First iron-smelting furnaces of the Kangju period"],
+2:["Nomadic societies remained static until adopting sedentary agriculture.","Steppe nomads existed solely on the periphery of sedentary empires.","Nomadic states lacked any legal or administrative institutions."],
+3:["It remained a localized practice confined to northern Kazakhstan.","It immediately replaced all hunting and gathering in the Bronze Age.","It was primarily used for religious sacrifices rather than transport."],
+4:["Mastery of bronze metallurgy and wheel transport","Transition to permanent agricultural settlements"],
+5:["Defined territory and population","System of governance and law","Sovereignty and public authority"],
+6:["They allied with Athens and Sparta against Darius I","They remained strictly neutral in Central Asia","They invaded the Balkan peninsula independently"],
+7:["Kangju","Sarmatians","Botai"],
+8:["The Tang army captured Suyab and annexed Zhetysu","The Türgesh Khaganate expanded its rule into Western China"],
+9:["Judicial officials and tax collectors","Captured war slaves of the Ashina clan","Aristocratic governors of western provinces"],
+10:["The Ashina originally migrated from the Volga basin to Zhetysu","They allied with the Rouran Khaganate to invade Byzantium in 552"],
+11:["It emerged in the Irtysh valley with Imakiya as its capital","It was founded in Zhetysu after the fall of the Uyghur Khaganate","It centered on Balasagun and adopted Buddhism as state religion"],
+12:["The Kimaks conquered Transoxiana and established the Karakhanid dynasty","The Kipchaks ruled exclusively south of the Syr Darya river"],
+13:["Satuk Bughra Khan rejected Islam in favor of Tengrianism","The Karakhanids defeated Genghis Khan at Otrar in 1219"],
+14:["Temuchin inherited a unified Mongol empire directly from his father","He was proclaimed Chinggis Khan in Sarai after conquering Kievan Rus’"],
+15:["Abu’l-Khayr united with Kerey and Janibek to conquer Moghulistan","The Golden Horde remained politically unified until the late 16th century"],
+16:["Ulus denoted a fixed urban province governed by elected merchants","Kurultai was a religious tax levied exclusively on sedentary farmers"],
+17:["Qasim Khan signed the first protectorate treaty with the Russian Empire","Tauke Khan migrated to the Chu Valley to found the Kazakh Khanate"],
+18:["The Dzungars received direct military troops from the Russian Tsar","The Dzungars relied solely on light cavalry without gunpowder weapons"],
+19:["St. Petersburg banned all caravan trade between Russia and Central Asia","Kazakh nomads completely abandoned livestock breeding for factory labor"],
+20:["Kazakh khans refused all diplomatic contact with neighboring Asian rulers","Russia stationed permanent garrisons in every Kazakh aul in 1731"],
+21:["They formed a permanent unified federation with the Kazakh Zhuzes","They remained completely isolated from steppe trade routes"],
+22:["A single absolute monarch centralized all three Zhuzes","The Dzungar threat had already been eliminated by the Qing Empire"],
+23:["Ibrai Altynsarin led the 1837 armed uprising against Russian forts","Chokan Valikhanov founded the Alash Orda government in 1917"],
+24:["He wanted to abolish the Khanate and introduce Russian okrugs","He aimed to convert the Junior Zhuz to Orthodox Christianity"],
+25:["It restored the authority of Chinggisid khans across the Middle Zhuz","It granted full sovereign independence to the Orenburg Kazakhs"],
+26:["It was a temporary, equal military pact between independent states","It exempted Kazakh tribes from all imperial obligations"],
+27:["Russian forces annexed Semirech’e and abolished the Great Zhuz","Kazakhs decisively conquered the Dzungar capital in Ili"],
+28:["They returned all Cossack fortress lands back to nomadic clans","They abolished Russian taxes and restored traditional khan courts"],
+29:["Sadvakasov argued Kazakhstan should remain purely agrarian without factories","Sadvakasov supported exporting all raw ore exclusively to central Russia"],
+30:["It increased seasonal migration distances across the steppe","It eliminated state grain and meat procurement quotas"],
+31:["Reforms relied on private market capitalism and local autonomy","Traditional clan elders directed industrial planning"],
+32:["Kazakhstan became an independent UN member state in 1920","The Alash Autonomy ruled Kazakhstan continuously until 1936"],
+33:["Free private trade and market pricing were expanded in 1919","Forced grain requisitions (prodrazvyorstka) were abolished in 1918"],
+34:["Students protested in support of Gorbachev’s appointment of Kolbin","The protests demanded the restoration of the Soviet planned economy"],
+35:["The closure of the Baikonur Cosmodrome","A sudden drop in global oil prices"],
+36:["Ethnic Kazakhs became over seventy percent of the population by 1960","Northern steppes were converted back into traditional nomadic pastures"],
+37:["All evacuated factories were dismantled and returned to Ukraine in 1945","Ration cards remained mandatory in Kazakhstan until 1964"],
+38:["Gorbachev immediately privatized all heavy industry in 1985","Perestroika strengthened Gosplan’s absolute control over prices"],
+39:["Full political unification under a single supranational parliament","Exclusive military alliance isolated from global trade"],
+40:["Creating a common single currency across Asia","Replacing the United Nations Security Council"],
+41:["Its extensive coastline along the Indian Ocean","Its lack of any shared borders with Russia or China"],
+42:["Aligning exclusively with one superpower against all neighbors","Isolating Kazakhstan from international organizations"],
+43:["On 25 October 1990, upon adopting the Sovereignty Declaration","On 30 August 1995, after adopting the second Constitution"],
+44:["Astana hosted the signing of the Treaty of Versailles","Kazakhstan deployed peacekeeping armies to Western Europe"],
+45:["It transferred full ownership of the Caspian Sea to a single state","It banned all oil extraction and underwater pipelines in the Caspian"]
+};
+const EXPL = {
+1:"The Issyk kurgan yielded the Saka “Golden Man” (4th–3rd c. BCE), and the Eneolithic Botai culture (c. 3500 BCE) provided the earliest global evidence of horse domestication.",
+2:"The civilizational approach rejects Eurocentric views of nomads as “backward,” recognizing the Great Steppe as an advanced civilization that shaped Eurasian trade, warfare, and statecraft.",
+3:"Horse domestication at Botai revolutionized transport, warfare, and communication across Eurasia, laying the foundation for steppe nomadic civilizations.",
+4:"Yuval Noah Harari explains that the Cognitive Revolution (~70,000 years ago) was driven by brain enlargement, fictive/abstract language, and complex social-symbolic cooperation.",
+5:"Foundational elements of statehood require permanent territory, population, public authority/law, and sovereignty—not a transitory or temporary nature.",
+6:"Ancient Saka warriors served as elite cavalry and archers within the armies of the Achaemenid Persian Empire during the Greco–Persian Wars.",
+7:"The intricate gold Kargaly Diadem (found in Zhetysu) is a masterpiece of the ancient Uysun culture.",
+8:"At the Battle of Atlakh/Talas (751 CE), Karluks defected to the Abbasid Arab side to defeat Tang China, halting Chinese westward expansion without establishing permanent Arab rule over Talas.",
+9:"In the Turkic Khaganate’s social hierarchy, the kara budun were the ordinary free nomadic herders who formed the bulk of the population.",
+10:"After 460 CE, Rouran pressure pushed the Ashina clan to the Altai Mountains, where they paid tribute in iron while uniting local tribes before rebelling in 552 CE.",
+11:"The Oghuz State emerged in the late 9th–early 10th centuries along the middle and lower Syr Darya and Aral Sea basin, with Yangikent as its capital.",
+12:"The Kimak Khaganate was centered along the Irtysh River with Imakiya as its capital; after its decline in the 11th century, the Kipchaks dominated the vast steppe known as Desht-i Kipchak.",
+13:"The Karakhanids promoted Islamic architecture (mosques, madrasas, and mausoleums like Aisha Bibi), but after losing the Battle of Qatwan (1141), the Western Karakhanids became vassals of the Kara-Khitans.",
+14:"After his father Yesugei was poisoned by Tatars, Temuchin survived exile, forged tribal alliances, defeated rivals, and was proclaimed Chinggis Khan at the 1206 quriltai.",
+15:"Fragmentation of the Golden Horde produced the Kazan, Crimean, Astrakhan, Sibir, and Qasim khanates, while Shibanid ruler Abu’l-Khayr consolidated the Nomadic Uzbek state with Sighnaq as its capital.",
+16:"In the Mongol Empire, an ulus meant authority over specific tribes/people rather than fixed borders, and a quriltai was the supreme political and military council of khans and chiefs.",
+17:"Esim Khan (r. 1598–1628) captured the city of Turkestan and made it the political and spiritual capital of the Kazakh Khanate.",
+18:"Unlike the fragmented Kazakh Zhuzes, the Dzungar Khanate possessed a centralized state, a standing army, and modern firearms and artillery.",
+19:"During imperial integration, Orenburg, Petropavlovsk, and Semipalatinsk grew into major caravan trade hubs, while Volga-Ural Muslims helped establish mosques, madrasas, and Islamic printing.",
+20:"Despite swearing an oath to Russia in 1731, Abulkhair Khan acted as an independent sovereign—negotiating directly with Persian ruler Nadir Shah and accepting the throne of Khiva.",
+21:"The southern Central Asian states (Bukhara, Kokand, Khiva) were ancient centers of Islamic commerce and learning that traded with Kazakhs but also launched raids and competed for Syr Darya cities.",
+22:"After Tauke Khan’s death (1715/1718), unified leadership fractured among separate khans of the Great, Middle, and Little Zhuzes, driving a flexible multi-vector diplomacy among powerful neighbors.",
+23:"Chokan Valikhanov pioneered scientific ethnography, Ibrai Altynsarin founded bilingual schools, Abai Kunanbaev shaped modern literature, and Bukeikhanov & Baitursynov led the Alash autonomy movement via the Qazaq newspaper.",
+24:"From the Kazakh perspective, Abulkhair Khan’s 1731 oath (poddanstvo) was a pragmatic military-political alliance to secure Russian support against Dzungar invasions.",
+25:"Speransky’s 1822 Statute on the Siberian Kirgiz abolished khan rule in the Middle Zhuz, divided the steppe into okrugs, volosts, and auls, and replaced hereditary khans with elected officials.",
+26:"Russian officials interpreted poddanstvo as permanent territorial sovereignty over Kazakh lands, demanding tribute (yasak) and noble hostages (amanat) to guarantee loyalty.",
+27:"During the “Years of Great Disaster” (Aqtaban Shubyryndy, 1723–1727), Tsewang Rabtan’s Dzungar forces seized Tashkent and Sayram, causing mass displacement and deep collective trauma.",
+28:"The 1868 Provisional Statute and 1886 Turkestan Statute reorganized the region into Steppe and Turkestan Governor-Generalships and declared all Kazakh land state property, making nomads mere “users.”",
+29:"Smagul Sadvakasov opposed Goloshchekin’s raw-material export model, advocating instead for local processing factories inside Kazakhstan and training national Kazakh specialists.",
+30:"Steppe pastoralism relied on seasonal migration between winter (qystau) and summer (zhailau) pastures; forced sedentarization concentrated herds in permanent settlements and cut off seasonal grazing, destroying livestock.",
+31:"Soviet modernization was driven “from above” by the Communist Party through centralized state institutions to overhaul both the economy and traditional social structures.",
+32:"Soviet state-building began with the Kazrevkom in 1919, formed the autonomous republic within the RSFSR in 1920, and elevated Kazakhstan to a full Union republic (Kazakh SSR) in 1936.",
+33:"War Communism nationalized industry and banks and imposed forced grain/livestock requisitions (prodrazvyorstka), triggering the 1921–1922 famine that left 2 million people starving by March 1922.",
+34:"The December 1986 (Zheltoksan) student protests in Alma-Ata erupted after Moscow replaced Dinmukhamed Kunaev with outsider Gennady Kolbin, challenging the center’s disregard for republican self-determination.",
+35:"In June 1979, mass demonstrations broke out in Tselinograd against Moscow’s secretive plan to carve out a German Autonomous Region in northern Kazakhstan.",
+36:"Khrushchev’s Virgin Lands Campaign (1954) triggered severe wind erosion across northern steppes and brought 1–2 million Slavic settlers, reducing ethnic Kazakhs to ~29–30% of the population by the late 1950s.",
+37:"Post-war recovery included the 1947 monetary reform that ended wartime rationing, alongside over 200 evacuated factories that permanently boosted Kazakhstan’s industrial base.",
+38:"Gorbachev’s Perestroika sought to revitalize—not dismantle—socialism by permitting cooperatives and greater enterprise autonomy, though weakening central planning before a market system existed caused economic disruption.",
+39:"From Nursultan Nazarbayev’s 1994 Eurasian Union proposal onward, Kazakhstan has insisted on purely economic integration without political subordination of member states.",
+40:"Within the Shanghai Cooperation Organization (SCO), Kazakhstan focuses on regional security (combating terrorism and extremism) and developing Eurasian transport and trade corridors.",
+41:"Being landlocked between Russia and China while possessing vast oil, gas, uranium, and mineral resources made diplomatic and transit diversification vital for Kazakhstan’s sovereignty.",
+42:"Kazakhstan’s multi-vector foreign policy aims to build constructive partnerships with all major global and regional powers while avoiding overdependence on any single center.",
+43:"Following the Constitutional Law on Independence (Dec 16, 1991), Kazakhstan gained rapid international recognition and joined the United Nations on March 2, 1992.",
+44:"Practicing middle-power diplomacy, Kazakhstan served as an impartial mediator by hosting the Astana Process talks on Syria and negotiations in Almaty over Iran’s nuclear program.",
+45:"Signed in Aktau in August 2018 by the five littoral states, the Caspian Sea Convention established legal rules governing waters, seabed resources, navigation, security, and pipelines."
+};
+const EX_LEC = (x) => x.n === 32 || x.n === 33 ? "06 & 07" : x.n === 39 ? "09 & 10" : String(x.lectureId).padStart(2, "0");
+const OPTS = {};
+MOCK.forEach(x => { const all = [...x.a, ...(DISTR[x.n] || [])]; for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; } OPTS[x.id] = all; });
+const need = (x) => parseInt(x.select.match(/\d/)[0], 10);
+
+function Mock({ P, setP }) {
+  const [lec, setLec] = useState(0);
+  const sel = (P.mock && P.mock.sel) || {}, done = (P.mock && P.mock.done) || {};
+  const setM = (f) => setP(p => ({ ...p, mock: f(p.mock || { sel: {}, done: {} }) }));
+  const list = MOCK.filter(x => !lec || x.lectureId === lec);
+  const g = P.graded || {}, right = MOCK.filter(x => g[x.id] === true).length, tried = MOCK.filter(x => x.id in g).length;
+  const toggle = (x, o) => { if (done[x.id]) return; const cur = sel[x.id] || [], n = need(x); let nx;
+    if (n === 1) nx = [o]; else if (cur.includes(o)) nx = cur.filter(v => v !== o); else if (cur.length < n) nx = [...cur, o]; else return;
+    setM(m => ({ ...m, sel: { ...m.sel, [x.id]: nx } })); };
+  const check = (x) => { const cur = sel[x.id] || [], ok = cur.length === x.a.length && cur.every(o => x.a.includes(o));
+    setP(p => { const m = p.mock || { sel: {}, done: {} }; return { ...p, mock: { ...m, sel: { ...m.sel, [x.id]: cur }, done: { ...m.done, [x.id]: true } }, graded: { ...(p.graded || {}), [x.id]: ok } }; }); };
+  const reset = () => setP(p => { const gr = { ...(p.graded || {}) }; Object.keys(gr).forEach(k => { if (k[0] === "m") delete gr[k]; }); return { ...p, graded: gr, mock: { sel: {}, done: {} } }; });
+  const style = (x, o) => { if (!done[x.id]) return (sel[x.id] || []).includes(o) ? { borderColor: "var(--ac)", background: "var(--hi)" } : {};
+    if (x.a.includes(o)) return { borderColor: "#2ea043", background: "rgba(46,160,67,.2)" };
+    if ((sel[x.id] || []).includes(o)) return { borderColor: "#dc3545", background: "rgba(220,53,69,.2)" }; return {}; };
+  return (<div><h1 className="text-2xl font-bold mb-1">Mock Exam Bank</h1>
+    <p className="mut text-sm mb-4 sans">{MOCK.length} questions · Checked: {tried} · Right: {right}</p>
+    <div className="flex gap-2 items-center mb-4 sans"><select className="card px-2 py-2 text-sm" value={lec} onChange={e => setLec(+e.target.value)}><option value={0}>All lectures</option>{LECTURES_DATA.map(l => <option key={l.id} value={l.id}>Lecture {pad(l.id)}</option>)}</select>
+      <button type="button" className="btn" onClick={reset}>Reset Mock Exam</button></div>
+    {list.map(x => { const cur = sel[x.id] || [], n = need(x), ok = done[x.id] && cur.length === x.a.length && cur.every(o => x.a.includes(o));
+      return (<div key={x.id} className="card p-4 mb-3">
+        <div className="flex gap-2 items-center text-xs sans mb-2"><span className="mut">Q{x.n} · Lecture {pad(x.lectureId)}</span><span className="card px-2 py-0.5 ac font-semibold">{x.select}</span></div>
+        <div className="font-semibold mb-2">{x.q}</div>
+        {OPTS[x.id].map(o => <label key={o} className="card flex gap-2 items-start p-2 mb-2 text-sm cursor-pointer" style={style(x, o)}>
+          <input type={n === 1 ? "radio" : "checkbox"} name={x.id} className="mt-1" checked={cur.includes(o)} onChange={() => toggle(x, o)} disabled={!!done[x.id]} />
+          <span>{o}{done[x.id] && x.a.includes(o) ? " ✓" : ""}{done[x.id] && !x.a.includes(o) && cur.includes(o) ? " ✗" : ""}</span></label>)}
+        <div className="flex gap-2 items-center sans text-sm">
+          {!done[x.id] ? <button type="button" className="btn" disabled={cur.length !== n} style={cur.length !== n ? { opacity: .5 } : {}} onClick={(e) => { e.preventDefault(); check(x); }}>Check Answer</button>
+            : <span className="font-semibold text-sm rounded px-2 py-1" style={ok ? { color: "#3fb950", background: "rgba(46,160,67,.15)" } : { color: "#f0707d", background: "rgba(220,53,69,.15)" }}>{ok ? "✓ Correct" : "✗ Not quite — green shows the right answer(s)"}</span>}
+          {!done[x.id] && <span className="mut">Select {n} to check</span>}</div>
+        {done[x.id] && !ok && <div className="mt-3 bg-[#1B1E28] border-l-4 border-[#D8B458] p-3 rounded text-sm text-[#C4C7D0]"><div className="font-semibold text-[#F3EFE6] mb-1">📖 Lecture Explanation (Lecture {EX_LEC(x)}):</div>{EXPL[x.n]}</div>}</div>); })}</div>);
+}
+
+const pad = (n) => String(n).padStart(2, "0");
+const load = () => { try { return JSON.parse(localStorage.getItem("qt_progress")) || {}; } catch (e) { return {}; } };
+
+const hl = (t) => t.split(/(“[^”]+”)/).map((p, i) => /^“/.test(p) ? <em key={i} className="text-[#D8B458]">{p}</em> : p);
+
+function Section({ k, title, children, ribbon }) {
+  return (<section className={"relative mb-9" + (ribbon ? " rounded-xl p-5 pt-6 border border-[rgba(216,180,88,0.35)] bg-[#15171E]" : "")}>
+    {ribbon && <span className="absolute -top-3 right-4 bg-[#D8B458] text-[#111217] text-[11px] font-bold tracking-widest px-3 py-1 rounded">MUST MEMORIZE</span>}
+    <div className="mb-4"><h3 className="uppercase tracking-widest text-xs font-semibold text-[#9CA3AF]">{k}. {title}</h3>
+      <div className="relative h-px bg-white/10 mt-2"><div className="absolute left-0 -top-px w-12 h-0.5 bg-[#D8B458]" /></div></div>
+    {children}</section>);
+}
+
+function Lecture({ L, done, toggle }) {
+  return (<div>
+    <div className="mb-10">
+      <span className="inline-block uppercase tracking-widest text-[11px] font-semibold text-[#D8B458] border border-[rgba(216,180,88,0.35)] rounded px-3 py-1">Lecture {pad(L.id)}</span>
+      <h1 className="text-3xl md:text-4xl font-bold mt-3 leading-tight">{L.title}</h1>
+      <p className="text-[#8A8F9E] mt-1">{L.subtitle}</p>
+      <div className="flex flex-wrap gap-2 mt-4 items-center">
+        {L.tags.map(t => <span key={t} className="text-xs px-3 py-1 rounded-full bg-[#1D202A] border border-white/10 text-[#C4C7D0] cursor-default transition-colors duration-200 hover:border-[#D8B458] hover:text-[#D8B458]">{t}</span>)}
+        <button type="button" onClick={toggle} className={"ml-auto rounded-full px-5 py-2 text-xs font-semibold tracking-widest border transition-all duration-300 " + (done ? "bg-[#D8B458] text-[#111217] border-[#D8B458]" : "border-[rgba(216,180,88,0.35)] text-[#D8B458] hover:bg-[rgba(216,180,88,0.10)]")}>{done ? "✓ STUDIED" : "MARK AS STUDIED"}</button></div></div>
+    <Section k="A" title="Lecture Overview">{L.overview.map((p, i) => <p key={i} className="mb-3 leading-relaxed text-[#C4C7D0]">{p}</p>)}</Section>
+    <Section k="B" title="Core Concepts & Dates"><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {L.concepts.map(c => <div key={c.t} className="relative overflow-hidden bg-[#15171E] border border-white/10 rounded-lg pl-5 pr-4 py-3 transition-all duration-300 hover:bg-[#1B1E28] hover:border-[rgba(216,180,88,0.5)]">
+        <span className="absolute left-0 inset-y-0 w-[3px] bg-[#D8B458]" /><div className="serif font-bold text-[#D8B458]">{c.t}</div><div className="text-sm mt-1 text-[#C4C7D0]">{hl(c.d)}</div></div>)}</div></Section>
+    <Section k="C" title="Expanded Academic Notes">{L.notes.map((n, i) => <details key={n.h} open={i === 0} className="group mb-2 rounded-lg border border-white/10 bg-[#171920] open:bg-[#26231B] hover:bg-[#26231B] transition-colors duration-200">
+      <summary className="cursor-pointer flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#F3EFE6]"><span className="text-xs text-[#8A8F9E] transition-all duration-200 group-hover:text-[#D8B458] group-open:text-[#D8B458] group-open:rotate-90">▶</span>{n.h}</summary>
+      <ul className="list-disc ml-10 mr-4 mb-3 text-sm space-y-1 text-[#C4C7D0]">{n.pts.map(p => <li key={p}>{p}</li>)}</ul></details>)}</Section>
+    <Section k="D" title="Key Historical Figures"><div className="grid sm:grid-cols-2 gap-3">
+      {L.figures.map(f => <div key={f.n} className="card p-4"><div className="serif font-semibold text-[#F3EFE6] text-lg">{f.n}</div><div className="text-[11px] uppercase tracking-widest text-[#D8B458] mt-0.5">{f.life} · {f.role}</div><div className="text-sm mt-2">{f.contrib}</div></div>)}</div></Section>
+    <Section k="E" title="Comparative Analysis">{L.compare.map(t => <div key={t.title} className="mb-5"><div className="text-sm font-semibold text-[#F3EFE6] mb-2">{t.title}</div>
+      <div className="rounded-xl overflow-hidden border border-white/10"><div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="bg-[#1B1E28]">{t.cols.map((c, i) => <th key={i} className="text-left px-3 py-2 text-[11px] uppercase tracking-widest font-semibold text-[#D8B458]">{c}</th>)}</tr></thead>
+        <tbody>{t.rows.map((r, i) => <tr key={i} className="border-t border-white/5 hover:bg-[#D8B458]/10 transition-colors">{r.map((c, j) => <td key={j} className="px-3 py-2 align-top">{c}</td>)}</tr>)}</tbody></table></div></div></div>)}</Section>
+    <Section k="F" title="Historical Significance & Case Studies">{L.cases.map(c => <div key={c.t} className="card p-3 mb-2 text-sm"><b className="serif text-[#D8B458]">{c.t}.</b> {c.d}</div>)}</Section>
+    <Section k="G" title="Must Memorize ⚡" ribbon><div className="grid sm:grid-cols-2 gap-3">{L.memorize.map((m, i) => <div key={m} className="bg-[#1B1E28] border border-white/10 rounded-lg p-3 transition-all duration-300 hover:bg-[#2A261C] hover:border-[#D8B458]">
+      <div className="serif font-semibold text-sm text-[#D8B458] mb-1">📌 High-yield {pad(i + 1)}</div><div className="text-sm text-[#F3EFE6]">{m}</div></div>)}</div></Section>
+    <Section k="H" title="Exam Cheat Sheet 📎"><ul className="list-disc ml-5 text-sm mb-4 space-y-1">{L.cheat.lines.map(m => <li key={m}>{m}</li>)}</ul>
+      {L.cheat.qa.map(x => <details key={x.q} className="group mb-2 rounded-lg border border-white/10 bg-[#171920] open:bg-[#26231B] hover:bg-[#26231B] transition-colors duration-200">
+        <summary className="cursor-pointer flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#F3EFE6]"><span className="text-xs text-[#8A8F9E] transition-all duration-200 group-hover:text-[#D8B458] group-open:text-[#D8B458] group-open:rotate-90">▶</span>{x.q}</summary>
+        <p className="px-4 pb-3 pl-10 text-sm text-[#C4C7D0]">{x.a}</p></details>)}</Section>
+  </div>);
+}
+
+function Dashboard({ P }) {
+  const D = LECTURES_DATA, g = Object.values(P.graded || {}), doneN = (P.done || []).length;
+  const sc = g.length ? Math.round(100 * g.filter(Boolean).length / g.length) : null;
+  const kpi = [["Total Lectures", 10, D.length * 10], ["Core Concepts & Dates", D.reduce((a, l) => a + l.concepts.length, 0), 100], ["Key Figures", D.reduce((a, l) => a + l.figures.length, 0), 100],
+    ["Exam Questions", D.reduce((a, l) => a + l.cheat.qa.length, 0) + MOCK.length, 100], ["Lectures Completed", doneN + "/10", doneN * 10], ["Quiz Score", sc === null ? "–" : sc + "%", sc || 0]];
+  const steps = ["Open a lecture from the sidebar and read sections A–H in order.", "Study Core Concepts & Dates, then Must Memorize.", "Use Key Figures to search people across lectures.", "Test yourself in Exam Questions and the Mock Exam Bank.", "Drill terms in Flashcards (Know / Review Again).", "Mark each lecture as studied to track progress."];
+  return (<div><h1 className="text-3xl md:text-4xl font-bold mb-6">Study Dashboard</h1>
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">{kpi.map(([a, b, pc]) => <div key={a} className="group relative overflow-hidden rounded-xl bg-[#171920] border border-white/10 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgba(216,180,88,0.35)] hover:shadow-[0_0_20px_rgba(216,180,88,0.12)]">
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#D8B458] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="serif text-4xl font-bold text-[#F3EFE6]">{b}</div>
+      <div className="text-[11px] uppercase tracking-widest text-[#8A8F9E] mt-1">{a}</div>
+      <div className="h-1 bg-white/10 rounded mt-4"><div className="h-1 bg-[#D8B458] rounded transition-all duration-500" style={{ width: pc + "%" }} /></div></div>)}</div>
+    <div className="rounded-xl bg-[#171920] border border-white/10 p-6"><h3 className="serif text-xl font-semibold text-[#F3EFE6] mb-3">How to Use This Portal</h3>
+      <ol className="space-y-2 text-sm">{steps.map((t, i) => <li key={t} className="flex gap-3"><span className="serif text-[#D8B458] font-bold">{i + 1}</span><span>{t}</span></li>)}</ol></div></div>);
+}
+
+function Figures() {
+  const [q, setQ] = useState(""), [lec, setLec] = useState(0);
+  const all = LECTURES_DATA.flatMap(l => l.figures.map(f => ({ ...f, lec: l.id })));
+  const list = all.filter(f => (!lec || f.lec === lec) && (f.n + f.role + f.contrib).toLowerCase().includes(q.toLowerCase()));
+  return (<div><h1 className="text-2xl font-bold mb-4">Key Figures</h1>
+    <div className="flex gap-2 mb-4 sans"><input className="card px-3 py-2 flex-1 text-sm" placeholder="Search figures…" value={q} onChange={e => setQ(e.target.value)} />
+      <select className="card px-2 text-sm" value={lec} onChange={e => setLec(+e.target.value)}><option value={0}>All lectures</option>{LECTURES_DATA.map(l => <option key={l.id} value={l.id}>Lecture {pad(l.id)}</option>)}</select></div>
+    <div className="grid sm:grid-cols-2 gap-3">{list.map(f => <div key={f.lec + f.n} className="card p-3"><div className="font-semibold">{f.n}</div>
+      <div className="text-xs mut sans">{f.life} · {f.role} · L{pad(f.lec)}</div><div className="text-sm mt-1">{f.contrib}</div></div>)}</div></div>);
+}
+
+function Questions({ P, setP }) {
+  const [lec, setLec] = useState(0), [open, setOpen] = useState({});
+  const qs = LECTURES_DATA.flatMap(l => l.cheat.qa.map((x, i) => ({ ...x, id: l.id + "-" + i, lec: l.id }))).filter(x => !lec || x.lec === lec);
+  const grade = (id, v) => setP(p => ({ ...p, graded: { ...(p.graded || {}), [id]: v } }));
+  return (<div><h1 className="text-2xl font-bold mb-4">Exam Questions</h1>
+    <select className="card px-2 py-2 text-sm mb-4 sans" value={lec} onChange={e => setLec(+e.target.value)}><option value={0}>All lectures</option>{LECTURES_DATA.map(l => <option key={l.id} value={l.id}>Lecture {pad(l.id)}</option>)}</select>
+    {qs.map(x => <div key={x.id} className="card p-4 mb-3"><div className="text-xs mut sans">Lecture {pad(x.lec)}</div><div className="font-semibold">{x.q}</div>
+      <button className="btn mt-2" onClick={() => setOpen(o => ({ ...o, [x.id]: !o[x.id] }))}>{open[x.id] ? "Hide" : "Reveal"} Model Answer</button>
+      {open[x.id] && <div className="mt-2 text-sm"><p className="mb-2">{x.a}</p><div className="flex gap-2 sans">
+        <button className={"btn " + (P.graded?.[x.id] === true ? "on" : "")} onClick={() => grade(x.id, true)}>✓ I got it</button>
+        <button className={"btn " + (P.graded?.[x.id] === false ? "on" : "")} onClick={() => grade(x.id, false)}>✗ Missed it</button></div></div>}</div>)}</div>);
+}
+
+function Cards({ P, setP }) {
+  const cards = LECTURES_DATA.flatMap(l => l.concepts.map(c => ({ ...c, id: l.id + "-" + c.t })));
+  const [i, setI] = useState(0), [back, setBack] = useState(false);
+  const c = cards[i % cards.length], mark = (v) => { setP(p => ({ ...p, cards: { ...(p.cards || {}), [c.id]: v } })); setBack(false); setI(i + 1); };
+  const known = Object.values(P.cards || {}).filter(v => v === "know").length;
+  return (<div><h1 className="text-2xl font-bold mb-1">Flashcards</h1><p className="mut text-sm mb-4 sans">Card {i % cards.length + 1} of {cards.length} · Known: {known}</p>
+    <div className="card flip p-8 flex items-center justify-center text-center" onClick={() => setBack(!back)}>
+      {back ? <div><div className="text-xs ac sans mb-2">DEFINITION / SIGNIFICANCE</div><div>{c.d}</div></div> : <div><div className="text-xs ac sans mb-2">TERM / DATE (click to flip)</div><div className="text-2xl font-bold">{c.t}</div></div>}</div>
+    <div className="flex gap-2 mt-4 sans"><button className="btn" onClick={() => mark("know")}>✓ Know</button><button className="btn" onClick={() => mark("review")}>↻ Review Again</button></div></div>);
+}
+
+function App() {
+  const [view, setView] = useState("dash"), [P, setP] = useState(load);
+  useEffect(() => { try { localStorage.setItem("qt_progress", JSON.stringify(P)); } catch (e) {} }, [P]);
+  useEffect(() => { window.scrollTo(0, 0); }, [view]);
+  const done = P.done || [];
+  const toggle = (id) => setP(p => ({ ...p, done: (p.done || []).includes(id) ? p.done.filter(x => x !== id) : [...(p.done || []), id] }));
+  const tools = [["dash", "📊 Dashboard"], ["figs", "👤 Key Figures"], ["qs", "📝 Exam Questions"], ["mock", "🎯 Mock Exam Bank"], ["cards", "⚡ Flashcards"]];
+  const L = typeof view === "number" ? LECTURES_DATA.find(l => l.id === view) : null;
+  return (<div className="md:flex min-h-screen">
+    <aside className="sb sans md:fixed md:inset-y-0 md:left-0 md:w-72 p-4 md:overflow-y-auto">
+      <div className="serif text-2xl font-bold text-[#F3EFE6]">Qazaq<span className="text-[#D8B458]">Tarikh</span></div>
+      <div className="text-[11px] text-[#8A8F9E] mb-5 leading-snug">Interactive Final Exam Preparation Portal • 10 Lectures • History of Kazakhstan • Astana IT University</div>
+      <div className="text-[11px] uppercase tracking-widest text-[#8A8F9E] mb-1 mt-1">Course Lectures</div>
+      <div className="mb-4">{Array.from({ length: 10 }, (_, k) => k + 1).map(n => { const has = LECTURES_DATA.some(l => l.id === n);
+        return <button key={n} className={view === n ? "on" : ""} disabled={!has} style={has ? {} : { opacity: .4 }} onClick={() => setView(n)}>
+          <b className="mr-2">{pad(n)}</b>{has ? LECTURES_DATA.find(l => l.id === n).title.split(",")[0].split("(")[0].slice(0, 28) : "Coming soon"}{done.includes(n) && <span className="float-right">✓</span>}</button>; })}</div>
+      <div className="text-[11px] uppercase tracking-widest text-[#8A8F9E] mb-1 mt-1">Quick Tools</div>
+      {tools.map(([k, t]) => <button key={k} className={view === k ? "on" : ""} onClick={() => setView(k)}>{t}</button>)}
+    </aside>
+    <main className="md:ml-72 flex-1 p-5 md:p-8 max-w-5xl">
+      {L ? <Lecture L={L} done={done.includes(L.id)} toggle={() => toggle(L.id)} /> : view === "dash" ? <Dashboard P={P} /> : view === "figs" ? <Figures /> : view === "qs" ? <Questions P={P} setP={setP} /> : view === "mock" ? <Mock P={P} setP={setP} /> : <Cards P={P} setP={setP} />}
+    </main></div>);
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script></body></html>
